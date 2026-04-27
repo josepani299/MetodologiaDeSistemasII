@@ -14,6 +14,9 @@ public class RegistroRequestDto {
     @NotBlank(message = "El nombre es requerido")
     private String nombre;
 
+    @NotBlank(message = "El apellido es requerido")
+    private String apellido;
+
     
 
 
