@@ -20,4 +20,6 @@ public class ProductoResponseDto {
     private Integer stockActual;
 
     private Integer stockMinimo;
+    
+    private Boolean stockBajo;
 }
