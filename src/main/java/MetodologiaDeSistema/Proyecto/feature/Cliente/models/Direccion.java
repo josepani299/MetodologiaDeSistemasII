@@ -1,5 +1,6 @@
 package MetodologiaDeSistema.Proyecto.feature.Cliente.models;
 
+import jakarta.persistence.Embeddable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Embeddable
 public class Direccion {
     
     @NotBlank(message="El pais es requerido")

@@ -1,5 +1,6 @@
 package MetodologiaDeSistema.Proyecto.feature.Cliente.models;
 
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,6 +35,7 @@ public class Cliente {
     private String apellido;
 
     @NotNull(message="La direccion es requerida")
+    @Embedded
     private Direccion direccion;
 
     @NotBlank(message="El mail es requerido")
