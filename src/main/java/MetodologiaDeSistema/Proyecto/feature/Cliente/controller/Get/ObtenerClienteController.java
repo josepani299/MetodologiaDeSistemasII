@@ -26,18 +26,3 @@ public class ObtenerClienteController {
     }
     
 }
-/*
-@RestController
-@RequestMapping("/api/productos")
-@RequiredArgsConstructor
-public class ListarProductoController {
-
-    private final ProductoService productoService;
-
-    @GetMapping
-    public ResponseEntity<List<ProductoResponseDto>> listar(
-            @RequestParam(required = false) String nombre) {
-        return ResponseEntity.ok(productoService.listarProductos(nombre));
-    }
-}
- */
