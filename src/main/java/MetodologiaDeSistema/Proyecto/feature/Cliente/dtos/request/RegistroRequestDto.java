@@ -24,7 +24,7 @@ public class RegistroRequestDto {
 
     @NotBlank(message="El mail es requerido")
     @Email(message= "El mail tiene que tener la estrutura ...@...")
-    private String mail;
+    private String email;
 
     @NotBlank(message="La contraseña es requerida")
     @Size(min=8,message="La contraseña tiene que tener un minimo de de 8 caracteres")
