@@ -36,4 +36,6 @@ public class Producto {
     
     @Column
     private Integer stockMinimo;
+
+    private boolean activo;
 }
