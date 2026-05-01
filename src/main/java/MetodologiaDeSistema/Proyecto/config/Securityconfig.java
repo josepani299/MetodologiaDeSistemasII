@@ -19,10 +19,13 @@ public class Securityconfig {
     http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(auth -> auth
+            .requestMatchers("/api/clientes/**").permitAll()
             .requestMatchers("/api/clientes/registro").permitAll()
             .anyRequest().authenticated()
         );
 
     return http.build();
+
+
 }
 }
