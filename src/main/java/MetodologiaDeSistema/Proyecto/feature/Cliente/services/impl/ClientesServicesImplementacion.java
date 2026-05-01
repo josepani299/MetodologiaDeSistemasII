@@ -54,4 +54,19 @@ public class ClientesServicesImplementacion {
 
 
     }
+public RegistroResponseDtos obtenerClientePorId(Long id) {
+    Cliente cliente = clienterepository.findById(id).orElse(null);
+    if (cliente != null) {
+        RegistroResponseDtos respuesta = new RegistroResponseDtos();
+        respuesta.setId(cliente.getId());
+        respuesta.setNombre(cliente.getNombre());
+        respuesta.setApellido(cliente.getApellido());
+        respuesta.setEmail(cliente.getEmail());
+        respuesta.setMensaje("Cliente encontrado exitosamente.");
+        respuesta.setExitoso(true);
+        return respuesta;
+    } else {
+        return null; // O puedes lanzar una excepción personalizada si prefieres
+    }
+}
 }
