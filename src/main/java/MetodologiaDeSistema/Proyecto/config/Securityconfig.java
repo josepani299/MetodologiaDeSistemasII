@@ -22,7 +22,7 @@ public class Securityconfig {
             .requestMatchers("/api/clientes/**").permitAll()
             .requestMatchers("/api/clientes/registro").permitAll()
             .requestMatchers("/api/productos/**").permitAll()
-            .requestMatchers("api/producto/registro").permitAll()
+            .requestMatchers("/api/producto/registro").permitAll()
             .anyRequest().authenticated()
         );
 

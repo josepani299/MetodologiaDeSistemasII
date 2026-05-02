@@ -38,4 +38,6 @@ public class Producto {
     private Integer stockMinimo;
 
     private boolean activo;
+
+    private byte[] imagen;
 }
