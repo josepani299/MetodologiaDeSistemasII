@@ -5,7 +5,6 @@ import MetodologiaDeSistema.Proyecto.feature.Producto.Dtos.Response.ProductoResp
 import MetodologiaDeSistema.Proyecto.feature.Producto.Models.Producto;
 import MetodologiaDeSistema.Proyecto.feature.Producto.Repository.ProductoRepository;
 
-import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,13 +28,7 @@ public class ProductoService {
         producto.setActivo(true);
 
     
-        if (imagen != null && !imagen.isEmpty()) {
-            try {
-                producto.setImagen(imagen.getBytes()); 
-            } catch (IOException e) {
-                throw new RuntimeException("Error al procesar la imagen");
-            }
-        }
+        
 
         Producto guardado = productoRepository.save(producto);
 

@@ -39,5 +39,4 @@ public class Producto {
 
     private boolean activo;
 
-    private byte[] imagen;
 }

@@ -1,25 +1,25 @@
-package MetodologiaDeSistema.Proyecto.feature.Producto.Dtos.Response;
+    package MetodologiaDeSistema.Proyecto.feature.Producto.Dtos.Response;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+    import lombok.AllArgsConstructor;
+    import lombok.Data;
+    import lombok.NoArgsConstructor;
 
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class ProductoResponseDto {
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public class ProductoResponseDto {
 
-    private Long id;
-    
-    private String nombre;
+        private Long id;
+        
+        private String nombre;
 
-    private String marca;
+        private String marca;
 
-    private Double precio;
+        private Double precio;
 
-    private Integer stockActual;
+        private Integer stockActual;
 
-    private Integer stockMinimo;
-    
-    private Boolean stockBajo;
-}
+        private Integer stockMinimo;
+        
+        private Boolean stockBajo;
+    }
