@@ -24,6 +24,9 @@ public class Cliente {
     // Debemos crear los atributos que tendra el cliente
 
     // utilizamos anotadores para hacer las validadciones
+
+    // Faltaria agregar el role del cliente, en este caso deberiamos crear
+    // una nueva clase role.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
