@@ -21,6 +21,8 @@ public class Securityconfig {
         .authorizeHttpRequests(auth -> auth
             .requestMatchers("/api/clientes/**").permitAll()
             .requestMatchers("/api/clientes/registro").permitAll()
+            .requestMatchers("/api/productos/**").permitAll()
+            .requestMatchers("api/producto/registro").permitAll()
             .anyRequest().authenticated()
         );
 
