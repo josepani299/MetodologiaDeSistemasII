@@ -50,6 +50,7 @@ public class ProductoService {
         dto.setMarca(p.getMarca());
         dto.setPrecio(p.getPrecio());
         dto.setStockActual(p.getStockActual());
+        dto.setStockMinimo(p.getStockMinimo());
         dto.setStockBajo(p.getStockActual() <= p.getStockMinimo());
         return dto;
     }
