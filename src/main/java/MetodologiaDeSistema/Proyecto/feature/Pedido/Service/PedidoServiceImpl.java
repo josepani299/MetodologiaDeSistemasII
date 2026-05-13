@@ -108,4 +108,50 @@ public class PedidoServiceImpl implements PedidoService {
                 pedido.getId()
         );
     }
+      @Transactional
+    @Override
+    public void actualizarEstado(
+            Long pedidoId,
+            EstadoPedido nuevoEstado) {
+
+        Pedido pedido = PedidoRepository.findById(pedidoId)
+                .orElseThrow(() ->
+                        new RuntimeException("Pedido no encontrado"));
+
+        EstadoPedido estadoActual = pedido.getEstado();
+
+
+        if(estadoActual == EstadoPedido.ENTREGADO
+                && nuevoEstado == EstadoPedido.PENDIENTE){
+
+            throw new RuntimeException(
+                    "No se puede volver un pedido entregado a pendiente"
+            );
+        }
+
+        if(nuevoEstado == EstadoPedido.CANCELADO){
+
+            for(PedidoItem item : pedido.getItems()){
+
+                Producto producto = item.getProducto();
+
+                producto.setStockActual(
+                        producto.getStockActual()
+                                + item.getCantidad()
+                );
+
+                productoRepository.save(producto);
+            }
+        }
+
+        pedido.setEstado(nuevoEstado);
+
+        PedidoRepository.save(pedido);
+
+        PedidoEmailService.enviarCambioEstado(
+                "cliente@gmail.com",
+                pedido.getId(),
+                nuevoEstado
+        );
+    }
 }  
