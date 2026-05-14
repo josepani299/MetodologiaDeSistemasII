@@ -1,18 +1,29 @@
 package MetodologiaDeSistema.Proyecto.feature.Cliente.models;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
+import MetodologiaDeSistema.Proyecto.feature.Direccion.models.DireccionEnvio;
 
 @Data
 @Entity
@@ -37,7 +48,6 @@ public class Cliente {
     @NotBlank( message = "El apellido es requerido")
     private String apellido;
 
-    @NotNull(message="La direccion es requerida")
     @Embedded
     private Direccion direccion;
 
@@ -48,6 +58,10 @@ public class Cliente {
     @NotBlank(message="La contraseña es requerida")
     @Size(min=8, message="La contraseña tiene que tener al menos 8 caracteres")
     private String password;
+
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
+    private List<DireccionEnvio> direccionesEnvio = new ArrayList<>();
 
 
 }
