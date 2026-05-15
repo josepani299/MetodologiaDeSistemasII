@@ -22,4 +22,6 @@
         private Integer stockMinimo;
         
         private Boolean stockBajo;
+        
+        private boolean activo;
     }

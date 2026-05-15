@@ -1,14 +1,18 @@
 package MetodologiaDeSistema.Proyecto.feature.Producto.Service.Impl;
 
-import MetodologiaDeSistema.Proyecto.feature.Producto.Dtos.Request.ProductoCreateDto;
-import MetodologiaDeSistema.Proyecto.feature.Producto.Dtos.Response.ProductoResponseDto;
-import MetodologiaDeSistema.Proyecto.feature.Producto.Models.Producto;
-import MetodologiaDeSistema.Proyecto.feature.Producto.Repository.ProductoRepository;
-
 import java.util.List;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import MetodologiaDeSistema.Proyecto.feature.Producto.Dtos.Request.ProductoCreateDto;
+import MetodologiaDeSistema.Proyecto.feature.Producto.Dtos.Response.ProductoResponseDto;
+import MetodologiaDeSistema.Proyecto.feature.Producto.Exceptions.ProductoEnKitActivoException;
+import MetodologiaDeSistema.Proyecto.feature.Producto.Exceptions.ProductoNoEncontradoException;
+import MetodologiaDeSistema.Proyecto.feature.Producto.Exceptions.ProductoYaInactivoException;
+import MetodologiaDeSistema.Proyecto.feature.Producto.Models.Producto;
+import MetodologiaDeSistema.Proyecto.feature.Producto.Repository.ProductoRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -42,6 +46,24 @@ public class ProductoService {
 
         return productos.stream().map(this::mapToDto).toList();
     }
+    public ProductoResponseDto darDeBaja(Long id) {
+
+    Producto producto = productoRepository.findById(id)
+            .orElseThrow(() -> new ProductoNoEncontradoException(id));
+
+    if (!producto.isActivo()) {
+        throw new ProductoYaInactivoException(id);
+    }
+
+    if (productoRepository.existeEnKitActivo(id)) {
+        throw new ProductoEnKitActivoException(id);
+    }
+
+    producto.setActivo(false);
+    Producto actualizado = productoRepository.save(producto);
+
+    return mapToDto(actualizado);
+}
 
     private ProductoResponseDto mapToDto(Producto p) {
         ProductoResponseDto dto = new ProductoResponseDto();
@@ -52,6 +74,7 @@ public class ProductoService {
         dto.setStockActual(p.getStockActual());
         dto.setStockMinimo(p.getStockMinimo());
         dto.setStockBajo(p.getStockActual() <= p.getStockMinimo());
+        dto.setActivo(p.isActivo());
         return dto;
     }
 }

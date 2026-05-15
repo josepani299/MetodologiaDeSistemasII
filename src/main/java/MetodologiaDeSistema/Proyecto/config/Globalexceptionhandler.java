@@ -16,11 +16,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import MetodologiaDeSistema.Proyecto.feature.Direccion.dtos.response.ErrorResponseDto;
+import MetodologiaDeSistema.Proyecto.feature.Producto.Exceptions.ProductoEnKitActivoException;
+import MetodologiaDeSistema.Proyecto.feature.Producto.Exceptions.ProductoNoEncontradoException;
+import MetodologiaDeSistema.Proyecto.feature.Producto.Exceptions.ProductoYaInactivoException;
 
 @RestControllerAdvice
-public class GlobalExceptionHandler{
+public class Globalexceptionhandler{
     
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(Globalexceptionhandler.class);
     
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -99,4 +102,54 @@ public class GlobalExceptionHandler{
         
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
+    @ExceptionHandler(ProductoNoEncontradoException.class)
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public ResponseEntity<ErrorResponseDto> handleProductoNotFound(
+        ProductoNoEncontradoException ex,
+        WebRequest request) {
+
+    ErrorResponseDto error = ErrorResponseDto.builder()
+        .codigo("PRODUCTO_NO_ENCONTRADO")
+        .mensaje(ex.getMessage())
+        .timestamp(LocalDateTime.now())
+        .path(request.getDescription(false).replace("uri=", ""))
+        .status(HttpStatus.NOT_FOUND.value())
+        .build();
+
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+}
+
+@ExceptionHandler(ProductoYaInactivoException.class)
+@ResponseStatus(HttpStatus.CONFLICT)
+public ResponseEntity<ErrorResponseDto> handleProductoYaInactivo(
+        ProductoYaInactivoException ex,
+        WebRequest request) {
+
+    ErrorResponseDto error = ErrorResponseDto.builder()
+        .codigo("PRODUCTO_YA_INACTIVO")
+        .mensaje(ex.getMessage())
+        .timestamp(LocalDateTime.now())
+        .path(request.getDescription(false).replace("uri=", ""))
+        .status(HttpStatus.CONFLICT.value())
+        .build();
+
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+}
+
+@ExceptionHandler(ProductoEnKitActivoException.class)
+@ResponseStatus(HttpStatus.CONFLICT)
+public ResponseEntity<ErrorResponseDto> handleProductoEnKit(
+        ProductoEnKitActivoException ex,
+        WebRequest request) {
+
+    ErrorResponseDto error = ErrorResponseDto.builder()
+        .codigo("PRODUCTO_EN_KIT_ACTIVO")
+        .mensaje(ex.getMessage())
+        .timestamp(LocalDateTime.now())
+        .path(request.getDescription(false).replace("uri=", ""))
+        .status(HttpStatus.CONFLICT.value())
+        .build();
+
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+}
 }
