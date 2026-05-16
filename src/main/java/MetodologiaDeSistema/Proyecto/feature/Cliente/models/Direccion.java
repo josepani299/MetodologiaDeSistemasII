@@ -29,7 +29,7 @@ public class Direccion {
     @NotNull(message="El numero de calle es requerido")
     private int numeroCalle;
 
-    @NotBlank(message="El pais es requerido")
+    @NotBlank(message="El numero de depto es requerido")
     private String depto;
 
 

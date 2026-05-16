@@ -4,9 +4,11 @@
  */
 package MetodologiaDeSistema.Proyecto.feature.Producto.Repository;
 
-import MetodologiaDeSistema.Proyecto.feature.Producto.Models.Producto;
 import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import MetodologiaDeSistema.Proyecto.feature.Producto.Models.Producto;
 
 /**
  *
@@ -15,4 +17,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByNombreContainingIgnoreCaseAndActivoTrue(String nombre);
     List<Producto> findByActivoTrue();
+    default boolean existeEnKitActivo(Long productoId) {
+    return false;
+}
 }
