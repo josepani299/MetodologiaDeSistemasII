@@ -1,5 +1,6 @@
 package MetodologiaDeSistema.Proyecto.feature.Carrito.Models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class Carrito {
 
     private Double total = 0.0;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL)
     private List<CarritoItem> items = new ArrayList<>();
 }
