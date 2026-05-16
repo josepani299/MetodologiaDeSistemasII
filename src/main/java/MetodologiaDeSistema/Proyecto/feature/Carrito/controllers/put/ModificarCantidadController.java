@@ -1,6 +1,6 @@
 package MetodologiaDeSistema.Proyecto.feature.Carrito.controllers.put;
 
-import MetodologiaDeSistema.Proyecto.feature.Carrito.Service.Impl.CarritoService;
+import MetodologiaDeSistema.Proyecto.feature.Carrito.Service.Interface.CarritoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
