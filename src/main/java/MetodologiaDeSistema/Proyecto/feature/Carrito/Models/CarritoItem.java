@@ -1,6 +1,7 @@
 package MetodologiaDeSistema.Proyecto.feature.Carrito.Models;
 
 import MetodologiaDeSistema.Proyecto.feature.Producto.Models.Producto;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class CarritoItem {
 
     private Double precio;
 
+    @JsonBackReference
     @ManyToOne
     private Carrito carrito;
 
