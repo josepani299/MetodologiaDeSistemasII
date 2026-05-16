@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestión de Productos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0f0f11;
+            --surface: #18181c;
+            --surface2: #222228;
+            --border: rgba(255,255,255,0.07);
+            --border2: rgba(255,255,255,0.12);
+            --text: #f0f0f0;
+            --text-sec: #888;
+            --text-dim: #555;
+            --accent: #c8f55a;
+            --accent-dim: rgba(200,245,90,0.12);
+            --accent-border: rgba(200,245,90,0.3);
+            --danger: #f55a5a;
+            --radius: 10px;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Layout ── */
+        .layout { display: flex; min-height: 100vh; }
+
+        /* ── Main ── */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        .topbar {
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .topbar-left h1 { font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+        .topbar-left p { font-size: 12px; color: var(--text-sec); margin-top: 2px; }
+
+        .badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--accent-dim); color: var(--accent);
+            border: 1px solid var(--accent-border);
+            padding: 4px 10px; border-radius: 20px; font-size: 12px;
+        }
+
+        /* ── Filtros ── */
+        .filters {
+            padding: 1.25rem 2rem;
+            border-bottom: 1px solid var(--border);
+            display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+        }
+
+        .filter-input {
+            display: flex; align-items: center; gap: 8px;
+            background: var(--surface); border: 1px solid var(--border2);
+            border-radius: 7px; padding: 7px 12px;
+            transition: border-color 0.15s;
+        }
+        .filter-input:focus-within { border-color: var(--accent); }
+        .filter-input i { color: var(--text-dim); font-size: 15px; flex-shrink: 0; }
+        .filter-input input {
+            background: none; border: none; outline: none;
+            color: var(--text); font-size: 13px; font-family: inherit;
+            width: 160px;
+        }
+        .filter-input input::placeholder { color: var(--text-dim); }
+
+        .filter-input.price input,
+        .filter-input.stock input { width: 90px; }
+
+        .filter-label { font-size: 11px; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+
+        .btn-clear {
+            margin-left: auto; display: flex; align-items: center; gap: 6px;
+            background: none; border: 1px solid var(--border2); border-radius: 7px;
+            padding: 7px 14px; color: var(--text-sec); font-size: 12px;
+            font-family: inherit; cursor: pointer; transition: all 0.15s;
+        }
+        .btn-clear:hover { border-color: var(--danger); color: var(--danger); }
+
+        /* ── Tabla ── */
+        .table-wrap { flex: 1; overflow: auto; padding: 1.5rem 2rem; }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        thead tr { border-bottom: 1px solid var(--border2); }
+        thead th {
+            text-align: left; padding: 0 14px 12px;
+            font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--text-dim); font-weight: 600; cursor: pointer;
+            user-select: none; white-space: nowrap;
+        }
+        thead th:hover { color: var(--text-sec); }
+        thead th .sort-icon { margin-left: 4px; opacity: 0.4; font-size: 13px; vertical-align: -2px; }
+        thead th.sorted { color: var(--accent); }
+        thead th.sorted .sort-icon { opacity: 1; }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background 0.1s;
+        }
+        tbody tr:hover { background: var(--surface); }
+        tbody tr:last-child { border-bottom: none; }
+
+        tbody td {
+            padding: 14px; font-size: 13px; vertical-align: middle;
+        }
+
+        .td-nombre { font-weight: 600; color: var(--text); }
+        .td-desc { color: var(--text-sec); max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .td-precio { color: var(--accent); font-weight: 700; font-size: 14px; }
+        .td-stock { }
+
+        .stock-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 10px; border-radius: 20px; font-size: 12px;
+        }
+        .stock-ok   { background: rgba(90,245,150,0.1); color: #5af596; border: 1px solid rgba(90,245,150,0.25); }
+        .stock-low  { background: rgba(245,200,90,0.1); color: #f5c85a; border: 1px solid rgba(245,200,90,0.25); }
+        .stock-out  { background: rgba(245,90,90,0.1);  color: #f55a5a; border: 1px solid rgba(245,90,90,0.25); }
+
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+        /* ── Empty state ── */
+        .empty {
+            text-align: center; padding: 4rem 2rem;
+            color: var(--text-dim);
+        }
+        .empty i { font-size: 40px; display: block; margin-bottom: 12px; }
+        .empty p { font-size: 13px; }
+
+        /* ── Footer stats ── */
+        .stats-bar {
+            padding: 0.75rem 2rem;
+            border-top: 1px solid var(--border);
+            display: flex; gap: 2rem; align-items: center;
+            font-size: 12px; color: var(--text-dim);
+        }
+        .stat span { color: var(--text-sec); margin-left: 6px; font-weight: 600; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- Main -->
+    <div class="main">
+
+        <!-- Topbar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <h1>BODY PAINTING — PRODUCTOS</h1>
+                <p>Listado y gestión de insumos</p>
+            </div>
+            <div class="badge"><i class="ti ti-package"></i><span id="total-badge">0 productos</span></div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="filters">
+            <span class="filter-label">Filtrar:</span>
+
+            <div class="filter-input">
+                <i class="ti ti-search"></i>
+                <input type="text" id="f-nombre" placeholder="Nombre..." oninput="applyFilters()" />
+            </div>
+
+            <div class="filter-input">
+                <i class="ti ti-align-left"></i>
+                <input type="text" id="f-desc" placeholder="Descripción..." oninput="applyFilters()" />
+            </div>
+
+            <div class="filter-input price">
+                <i class="ti ti-currency-dollar"></i>
+                <input type="number" id="f-precio-min" placeholder="$ mín" oninput="applyFilters()" min="0" />
+            </div>
+
+            <div class="filter-input price">
+                <i class="ti ti-currency-dollar"></i>
+                <input type="number" id="f-precio-max" placeholder="$ máx" oninput="applyFilters()" min="0" />
+            </div>
+
+            <div class="filter-input stock">
+                <i class="ti ti-box"></i>
+                <input type="number" id="f-stock-min" placeholder="Stock mín" oninput="applyFilters()" min="0" />
+            </div>
+
+            <button class="btn-clear" onclick="clearFilters()">
+                <i class="ti ti-x"></i> Limpiar filtros
+            </button>
+        </div>
+
+        <!-- Tabla -->
+        <div class="table-wrap">
+            <table id="tabla">
+                <thead>
+                <tr>
+                    <th onclick="sortBy('nombre')"   id="th-nombre">   Nombre      <i class="ti ti-selector sort-icon"></i></th>
+                    <th>                                                Descripción</th>
+                    <th onclick="sortBy('precio')"   id="th-precio">   Precio      <i class="ti ti-selector sort-icon"></i></th>
+                    <th onclick="sortBy('stock')"    id="th-stock">    Stock       <i class="ti ti-selector sort-icon"></i></th>
+                </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+            </table>
+            <div class="empty" id="empty" style="display:none;">
+                <i class="ti ti-mood-empty"></i>
+                <p>No se encontraron productos con esos filtros.</p>
+            </div>
+        </div>
+
+        <!-- Stats bar -->
+        <div class="stats-bar">
+            <div class="stat">Mostrando <span id="stat-showing">0</span></div>
+            <div class="stat">Sin stock <span id="stat-out">0</span></div>
+            <div class="stat">Stock bajo <span id="stat-low">0</span></div>
+            <div class="stat">Precio promedio <span id="stat-avg">$0</span></div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    /* ── Datos mock (reemplazar por fetch a /api/productos) ── */
+    const PRODUCTOS = [
+        { id:1,  nombre: 'Pintura Corporal Aqua Profesional',  descripcion: 'Pintura al agua de alta cobertura, apta piel sensible, paleta 12 colores',   precio: 8500,  stock: 40 },
+        { id:2,  nombre: 'Pintura UV Neón Set x6',             descripcion: 'Fluoresce bajo luz negra, colores: verde, rosa, naranja, azul, amarillo, blanco', precio: 6200,  stock: 18 },
+        { id:3,  nombre: 'Base Fijadora Corporal',             descripcion: 'Base selladora que prolonga la duración de la pintura hasta 12 horas',           precio: 4100,  stock: 0  },
+        { id:4,  nombre: 'Pincel Set x12 Profesional',         descripcion: 'Set de pinceles de pelo sintético, distintos grosores para detalles y rellenos',  precio: 5700,  stock: 9  },
+        { id:5,  nombre: 'Esponja de Latex x10',               descripcion: 'Esponjas para difuminar y degradar colores sobre la piel, descartables',         precio: 1900,  stock: 3  },
+        { id:6,  nombre: 'Aerógrafo Compacto Doble Acción',    descripcion: 'Aerógrafo profesional 0.3mm para técnicas de airbrush corporal',                 precio: 32000, stock: 7  },
+        { id:7,  nombre: 'Pintura Airbrush Corporal x8',       descripcion: 'Tintas fluidas para aerógrafo, secado rápido, set 8 colores básicos',            precio: 9800,  stock: 0  },
+        { id:8,  nombre: 'Glitter Cosmético Set x10',          descripcion: 'Glitters de grado cosmético, apto piel, 10 tonos metalizados y holográficos',    precio: 3400,  stock: 55 },
+        { id:9,  nombre: 'Removedor de Maquillaje Corporal',   descripcion: 'Removedor suave en gel, elimina pintura al agua y acrílica sin irritar la piel', precio: 2800,  stock: 2  },
+        { id:10, nombre: 'Pintura Perlada Set x6',             descripcion: 'Acabado nacarado y efecto metalizado, ideal para coberturas artísticas',         precio: 7100,  stock: 22 },
+        { id:11, nombre: 'Fijador en Spray 250ml',             descripcion: 'Sellador final en aerosol, resistente al agua, fija colores sin alterar el diseño', precio: 3600, stock: 0  },
+        { id:12, nombre: 'Paleta Mezcladora Profesional',      descripcion: 'Paleta de plástico con 20 pocillos para mezclar y conservar pinturas',           precio: 1200,  stock: 80 },
+    ];
+
+    let sortField = null;
+    let sortAsc = true;
+
+    function stockClass(s) {
+        if (s === 0) return 'stock-out';
+        if (s <= 5)  return 'stock-low';
+        return 'stock-ok';
+    }
+    function stockLabel(s) {
+        if (s === 0) return 'Sin stock';
+        if (s <= 5)  return `${s} (bajo)`;
+        return `${s}`;
+    }
+
+    function applyFilters() {
+        const fNombre   = document.getElementById('f-nombre').value.trim().toLowerCase();
+        const fDesc     = document.getElementById('f-desc').value.trim().toLowerCase();
+        const fPMin     = parseFloat(document.getElementById('f-precio-min').value) || 0;
+        const fPMax     = parseFloat(document.getElementById('f-precio-max').value) || Infinity;
+        const fSMin     = parseFloat(document.getElementById('f-stock-min').value)  || 0;
+
+        let filtered = PRODUCTOS.filter(p =>
+            p.nombre.toLowerCase().includes(fNombre) &&
+            p.descripcion.toLowerCase().includes(fDesc) &&
+            p.precio >= fPMin && p.precio <= fPMax &&
+            p.stock >= fSMin
+        );
+
+        if (sortField) {
+            filtered.sort((a, b) => {
+                const av = typeof a[sortField] === 'string' ? a[sortField].toLowerCase() : a[sortField];
+                const bv = typeof b[sortField] === 'string' ? b[sortField].toLowerCase() : b[sortField];
+                return sortAsc ? (av > bv ? 1 : -1) : (av < bv ? 1 : -1);
+            });
+        }
+
+        render(filtered);
+    }
+
+    function render(list) {
+        const tbody  = document.getElementById('tbody');
+        const empty  = document.getElementById('empty');
+        const badge  = document.getElementById('total-badge');
+        const stShow = document.getElementById('stat-showing');
+        const stOut  = document.getElementById('stat-out');
+        const stLow  = document.getElementById('stat-low');
+        const stAvg  = document.getElementById('stat-avg');
+
+        tbody.innerHTML = '';
+
+        if (list.length === 0) {
+            empty.style.display = 'block';
+            badge.textContent = '0 productos';
+            stShow.textContent = '0';
+            stOut.textContent = '0';
+            stLow.textContent = '0';
+            stAvg.textContent = '$0';
+            return;
+        }
+
+        empty.style.display = 'none';
+        badge.textContent = `${list.length} producto${list.length !== 1 ? 's' : ''}`;
+        stShow.textContent = list.length;
+        stOut.textContent  = list.filter(p => p.stock === 0).length;
+        stLow.textContent  = list.filter(p => p.stock > 0 && p.stock <= 5).length;
+        const avg = list.reduce((a,b) => a + b.precio, 0) / list.length;
+        stAvg.textContent  = '$' + Math.round(avg).toLocaleString('es-AR');
+
+        list.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+        <td class="td-nombre">${p.nombre}</td>
+        <td class="td-desc" title="${p.descripcion}">${p.descripcion}</td>
+        <td class="td-precio">$${p.precio.toLocaleString('es-AR')}</td>
+        <td class="td-stock">
+          <span class="stock-pill ${stockClass(p.stock)}">
+            <span class="dot"></span>${stockLabel(p.stock)}
+          </span>
+        </td>
+      `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function sortBy(field) {
+        if (sortField === field) { sortAsc = !sortAsc; }
+        else { sortField = field; sortAsc = true; }
+
+        ['nombre','precio','stock'].forEach(f => {
+            const th = document.getElementById('th-' + f);
+            th.classList.remove('sorted');
+            th.querySelector('.sort-icon').className = 'ti ti-selector sort-icon';
+        });
+
+        const th = document.getElementById('th-' + field);
+        th.classList.add('sorted');
+        th.querySelector('.sort-icon').className = (sortAsc ? 'ti ti-sort-ascending' : 'ti ti-sort-descending') + ' sort-icon';
+
+        applyFilters();
+    }
+
+    function clearFilters() {
+        ['f-nombre','f-desc','f-precio-min','f-precio-max','f-stock-min'].forEach(id => {
+            document.getElementById(id).value = '';
+        });
+        sortField = null;
+        sortAsc   = true;
+        ['nombre','precio','stock'].forEach(f => {
+            const th = document.getElementById('th-' + f);
+            if (th) {
+                th.classList.remove('sorted');
+                th.querySelector('.sort-icon').className = 'ti ti-selector sort-icon';
+            }
+        });
+        applyFilters();
+    }
+
+    /* ── Conectar al backend real ──
+    async function loadProductos() {
+      const res  = await fetch('/api/productos');
+      const data = await res.json();
+      PRODUCTOS.push(...data);
+      applyFilters();
+    }
+    loadProductos();
+    ── */
+
+    // Carga inicial
+    applyFilters();
+</script>
+
+</body>
+</html>

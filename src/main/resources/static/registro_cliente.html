@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro de Cliente</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: sans-serif; background: #f5f5f3; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; }
+
+    .reg-wrap { max-width: 520px; width: 100%; }
+    .reg-card { background: #fff; border: 0.5px solid rgba(0,0,0,0.12); border-radius: 12px; padding: 2rem; }
+
+    .reg-header { margin-bottom: 1.75rem; }
+    .reg-header h1 { font-size: 20px; font-weight: 500; margin-bottom: 4px; color: #111; }
+    .reg-header p { font-size: 14px; color: #666; }
+
+    .field { margin-bottom: 1rem; }
+    .field label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 6px; }
+    .field input {
+      width: 100%; padding: 8px 12px; font-size: 14px;
+      border: 0.5px solid rgba(0,0,0,0.2); border-radius: 8px;
+      outline: none; transition: border-color 0.15s;
+    }
+    .field input:focus { border-color: rgba(0,0,0,0.5); }
+    .field input.error { border-color: #e24b4a; }
+    .field input.ok { border-color: #1d9e75; }
+
+    .err-msg { font-size: 12px; color: #a32d2d; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+    .ok-msg  { font-size: 12px; color: #0f6e56; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .pass-wrap { position: relative; }
+    .pass-wrap input { padding-right: 40px; }
+    .pass-toggle {
+      position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: #888; font-size: 18px; padding: 0; line-height: 1;
+    }
+    .pass-toggle:hover { color: #111; }
+
+    .strength-bar { display: flex; gap: 4px; margin-top: 6px; }
+    .strength-seg { height: 3px; flex: 1; border-radius: 2px; background: #ddd; transition: background 0.2s; }
+    .strength-label { font-size: 11px; color: #888; margin-top: 4px; }
+
+    .submit-btn {
+      width: 100%; margin-top: 1.5rem; padding: 10px;
+      font-size: 15px; font-weight: 500;
+      background: #111; color: #fff;
+      border: none; border-radius: 8px;
+      cursor: pointer; transition: opacity 0.15s;
+    }
+    .submit-btn:hover { opacity: 0.85; }
+    .submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .divider { border: none; border-top: 0.5px solid rgba(0,0,0,0.1); margin: 1.25rem 0; }
+    .login-link { text-align: center; font-size: 13px; color: #666; margin-top: 1rem; }
+    .login-link a { color: #111; text-decoration: underline; cursor: pointer; }
+
+    
+    .success-card { display: none; flex-direction: column; align-items: center; text-align: center; padding: 2.5rem 2rem; }
+    .success-icon {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: #eaf3de; display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;
+    }
+    .success-icon i { font-size: 28px; color: #3b6d11; }
+    .success-card h2 { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+    .success-card p { font-size: 14px; color: #666; }
+
+
+    .loading-dots { display: inline-flex; gap: 4px; vertical-align: middle; }
+    .loading-dots span { width: 5px; height: 5px; border-radius: 50%; background: currentColor; animation: bounce 0.9s infinite; }
+    .loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+  </style>
+</head>
+<body>
+
+<div class="reg-wrap">
+  <div class="reg-card" id="form-card">
+    <div class="reg-header">
+      <h1><i class="ti ti-user-plus" style="font-size:20px; vertical-align:-3px; margin-right:6px;"></i>Crear cuenta</h1>
+      <p>Completa con tus datos para registrarte</p>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" placeholder="José" autocomplete="given-name" />
+        <div class="err-msg" id="err-nombre" style="display:none;">
+          <i class="ti ti-alert-circle"></i><span></span>
+        </div>
+      </div>
+      <div class="field">
+        <label for="apellido">Apellido</label>
+        <input type="text" id="apellido" placeholder="Sand" autocomplete="family-name" />
+        <div class="err-msg" id="err-apellido" style="display:none;">
+          <i class="ti ti-alert-circle"></i><span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="domicilio">Domicilio</label>
+      <input type="text" id="domicilio" placeholder="Segurola y Habana, Buenos Aires" autocomplete="street-address" />
+      <div class="err-msg" id="err-domicilio" style="display:none;">
+        <i class="ti ti-alert-circle"></i><span></span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="direccion">
+        Dirección adicional
+        <span style="font-weight:400; color:#888;">(piso, depto, etc.)</span>
+      </label>
+      <input type="text" id="direccion" placeholder="Piso 7, Depto A" autocomplete="address-line2" />
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="futbolparatodos@gmail.com" autocomplete="email" />
+      <div class="err-msg" id="err-email" style="display:none;">
+        <i class="ti ti-alert-circle"></i><span></span>
+      </div>
+      <div class="ok-msg" id="ok-email" style="display:none;">
+        <i class="ti ti-circle-check"></i><span>Email válido</span>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="password">Contraseña</label>
+      <div class="pass-wrap">
+        <input type="password" id="password" placeholder="Mínimo 8 caracteres"
+               autocomplete="new-password" oninput="evalPass(this.value)" />
+        <button class="pass-toggle" onclick="togglePass()" type="button" aria-label="Mostrar/ocultar contraseña">
+          <i class="ti ti-eye" id="eye-icon"></i>
+        </button>
+      </div>
+      <div class="strength-bar">
+        <div class="strength-seg" id="s0"></div>
+        <div class="strength-seg" id="s1"></div>
+        <div class="strength-seg" id="s2"></div>
+        <div class="strength-seg" id="s3"></div>
+      </div>
+      <div class="strength-label" id="strength-label">Ingresá una contraseña</div>
+      <div class="err-msg" id="err-password" style="display:none;">
+        <i class="ti ti-alert-circle"></i><span></span>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <button class="submit-btn" id="submit-btn" onclick="handleSubmit()">
+      Crear cuenta
+    </button>
+
+    <div class="login-link">
+      ¿Ya tenés cuenta? <a href="/login">Iniciá sesión</a>
+    </div>
+  </div>
+
+  
+  <div class="reg-card success-card" id="success-card">
+    <div class="success-icon"><i class="ti ti-check"></i></div>
+    <h2>¡Registro exitoso!</h2>
+    <p id="success-msg">
+      Tu cuenta fue creada correctamente.
+    </p>
+  </div>
+</div>
+
+<script>
+  // Emails mock ya registrados (reemplazar por llamada real al backend)
+  const MOCK_EMAILS = ['test@test.com', 'admin@admin.com', 'usuario@ejemplo.com'];
+  let passVisible = false;
+
+  
+  function togglePass() {
+    passVisible = !passVisible;
+    const input = document.getElementById('password');
+    const icon  = document.getElementById('eye-icon');
+    input.type  = passVisible ? 'text' : 'password';
+    icon.className = passVisible ? 'ti ti-eye-off' : 'ti ti-eye';
+  }
+
+  /* ── Barra de fuerza de contraseña ── */
+  function evalPass(val) {
+    const segs   = ['s0','s1','s2','s3'].map(id => document.getElementById(id));
+    const label  = document.getElementById('strength-label');
+    const colors = ['#E24B4A', '#EF9F27', '#63A522', '#1D9E75'];
+    const labels = ['Muy débil', 'Débil', 'Buena', 'Fuerte'];
+
+    let score = 0;
+    if (val.length >= 8)          score++;
+    if (/[A-Z]/.test(val))        score++;
+    if (/[0-9]/.test(val))        score++;
+    if (/[^A-Za-z0-9]/.test(val)) score++;
+
+    segs.forEach((s, i) => {
+      s.style.background = i < score ? colors[Math.min(score - 1, 3)] : '#ddd';
+    });
+
+    if (val.length === 0) {
+      label.textContent = 'Ingresá una contraseña';
+      label.style.color = '#888';
+    } else {
+      label.textContent = labels[Math.min(score - 1, 3)] || 'Muy débil';
+      label.style.color = colors[Math.min(score - 1, 3)];
+    }
+  }
+
+  /* ── Helpers de estado de campos ── */
+  function setErr(id, msg) {
+    const errEl = document.getElementById('err-' + id);
+    const input = document.getElementById(id);
+    if (!errEl || !input) return;
+    if (msg) {
+      errEl.querySelector('span').textContent = msg;
+      errEl.style.display = 'flex';
+      input.classList.add('error');
+      input.classList.remove('ok');
+    } else {
+      errEl.style.display = 'none';
+      input.classList.remove('error');
+    }
+  }
+
+  function setOk(id) {
+    const okEl  = document.getElementById('ok-' + id);
+    const input = document.getElementById(id);
+    if (okEl)  okEl.style.display = 'flex';
+    if (input) { input.classList.add('ok'); input.classList.remove('error'); }
+  }
+
+  /* ── Validación completa del formulario ── */
+  function validate() {
+    let valid = true;
+    const nombre    = document.getElementById('nombre').value.trim();
+    const apellido  = document.getElementById('apellido').value.trim();
+    const domicilio = document.getElementById('domicilio').value.trim();
+    const email     = document.getElementById('email').value.trim();
+    const password  = document.getElementById('password').value;
+    const okEmailEl  = document.getElementById('ok-email');
+    const dominiosOk = ['gmail.com','gmail.com.ar','hotmail.com','hotmail.com.ar','yahoo.com.ar','yahoo.com','outlook.com','outlook.com.ar'];
+    const emailRe    = /^[^\s@]+@[^\s@]+$/;
+
+    if (!nombre)    { setErr('nombre',    'El nombre es obligatorio');    valid = false; } else setErr('nombre',    '');
+    if (!apellido)  { setErr('apellido',  'El apellido es obligatorio');  valid = false; } else setErr('apellido',  '');
+    if (!domicilio) { setErr('domicilio', 'El domicilio es obligatorio'); valid = false; } else setErr('domicilio', '');
+
+    if (!email) {
+      setErr('email', 'El email es obligatorio');
+      if (okEmailEl) okEmailEl.style.display = 'none';
+      valid = false;
+    } else if (!email.includes('@') || !emailRe.test(email)) {
+      setErr('email', 'El email debe contener @');
+      if (okEmailEl) okEmailEl.style.display = 'none';
+      valid = false;
+    } else if (!dominiosOk.includes(email.split('@')[1].toLowerCase())) {
+      setErr('email', 'Solo se aceptan dominios: @gmail.com, @hotmail.com, @yahoo.com, @outlook.com (y variantes .com.ar)');
+      if (okEmailEl) okEmailEl.style.display = 'none';
+      valid = false;
+    } else if (MOCK_EMAILS.includes(email.toLowerCase())) {
+      setErr('email', 'Este email ya está registrado');
+      if (okEmailEl) okEmailEl.style.display = 'none';
+      valid = false;
+    } else {
+      setErr('email', '');
+      setOk('email');
+    }
+
+    if (password.length < 8) {
+      setErr('password', 'La contraseña debe tener al menos 8 caracteres');
+      valid = false;
+    } else {
+      setErr('password', '');
+      document.getElementById('password').classList.remove('error');
+    }
+
+    return valid;
+  }
+
+  /* ── Envío del formulario ── */
+  async function handleSubmit() {
+    if (!validate()) return;
+
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = 'Registrando <span class="loading-dots"><span></span><span></span><span></span></span>';
+
+    const payload = {
+      nombre:    document.getElementById('nombre').value.trim(),
+      apellido:  document.getElementById('apellido').value.trim(),
+      domicilio: document.getElementById('domicilio').value.trim(),
+      direccion: document.getElementById('direccion').value.trim(),
+      email:     document.getElementById('email').value.trim(),
+      password:  document.getElementById('password').value,
+    };
+
+    try {
+      // ── Reemplazar esta URL por el endpoint real de Spring Boot ──
+      const res = await fetch('/api/clientes/registro', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        // Si el backend devuelve error de email duplicado
+        if (res.status === 409 || err.campo === 'email') {
+          setErr('email', err.mensaje || 'Este email ya está registrado');
+        } else {
+          alert('Ocurrió un error. Intentá nuevamente.');
+        }
+        btn.disabled = false;
+        btn.textContent = 'Crear cuenta';
+        return;
+      }
+
+      
+      document.getElementById('form-card').style.display = 'none';
+      const sc = document.getElementById('success-card');
+      sc.style.display = 'flex';
+      document.getElementById('success-msg').innerHTML =
+        'Tu cuenta fue creada con <strong>' + payload.email + '</strong>.<br>Ya podés iniciar sesión y realizar compras.';
+
+    } catch (e) {
+      alert('No se pudo conectar con el servidor.');
+      btn.disabled = false;
+      btn.textContent = 'Crear cuenta';
+    }
+  }
+
+  
+  document.getElementById('email').addEventListener('blur', () => {
+    const val        = document.getElementById('email').value.trim();
+    const okEmailEl  = document.getElementById('ok-email');
+    const dominiosOk = ['gmail.com','gmail.com.ar','hotmail.com','hotmail.com.ar','yahoo.com.ar','yahoo.com','outlook.com','outlook.com.ar'];
+    const emailRe    = /^[^\s@]+@[^\s@]+$/;
+    if (!val) return;
+    if (!val.includes('@') || !emailRe.test(val)) {
+      setErr('email', 'El email debe contener @');
+      if (okEmailEl) okEmailEl.style.display = 'none';
+    } else if (!dominiosOk.includes(val.split('@')[1].toLowerCase())) {
+      setErr('email', 'Solo se aceptan dominios: @gmail.com, @hotmail.com, @yahoo.com, @outlook.com (y variantes .com.ar)');
+      if (okEmailEl) okEmailEl.style.display = 'none';
+    } else if (!MOCK_EMAILS.includes(val.toLowerCase())) {
+      setErr('email', '');
+      setOk('email');
+    }
+  });
+</script>
+/* */
+</body>
+</html>
