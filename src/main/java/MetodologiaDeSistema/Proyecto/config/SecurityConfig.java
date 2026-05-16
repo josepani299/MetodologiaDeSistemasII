@@ -28,10 +28,11 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .headers(h -> h.frameOptions(f -> f.disable()))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/clientes/registro").permitAll()
-                        .requestMatchers("/api/admin/**", "/api/productos/**", "/api/pedidos/**", "/api/kits/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**", "/api/productos/**", "/api/pedidos/**", "/api/kits/**").hasAnyRole("ADMIN", "VENDEDOR")
                         .requestMatchers("/api/clientes/**", "/api/carrito/**", "/api/direcciones/**").hasRole("CLIENTE")
                         .anyRequest().authenticated()
                 )
