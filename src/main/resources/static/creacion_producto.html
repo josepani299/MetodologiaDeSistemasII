@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nuevo Producto — Body Painting</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css" />
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0f0f11;
+            --surface: #18181c;
+            --surface2: #222228;
+            --border: rgba(255,255,255,0.07);
+            --border2: rgba(255,255,255,0.14);
+            --text: #f0f0f0;
+            --text-sec: #888;
+            --text-dim: #444;
+            --accent: #c8f55a;
+            --accent-dim: rgba(200,245,90,0.10);
+            --accent-border: rgba(200,245,90,0.28);
+            --danger: #f55a5a;
+            --danger-dim: rgba(245,90,90,0.10);
+            --danger-border: rgba(245,90,90,0.28);
+            --success: #5af596;
+            --success-dim: rgba(90,245,150,0.10);
+            --success-border: rgba(90,245,150,0.28);
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        /* ── Topbar ── */
+        .topbar {
+            width: 100%;
+            max-width: 640px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+        .topbar-left h1 { font-size: 15px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+        .topbar-left p  { font-size: 11px; color: var(--text-sec); margin-top: 3px; letter-spacing: 1px; }
+        .badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: var(--accent-dim); color: var(--accent);
+            border: 1px solid var(--accent-border);
+            padding: 4px 12px; border-radius: 20px; font-size: 11px; letter-spacing: 1px;
+        }
+
+        /* ── Card ── */
+        .card {
+            width: 100%; max-width: 640px;
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .card-body { padding: 2rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+        /* ── Fields ── */
+        .field { display: flex; flex-direction: column; gap: 6px; }
+        .field label {
+            font-size: 11px; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; color: var(--text-sec);
+            display: flex; align-items: center; gap: 6px;
+        }
+        .field label i { font-size: 14px; }
+        .required-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); display: inline-block; margin-left: 2px; }
+
+        .input-wrap { position: relative; }
+        .input-wrap input {
+            width: 100%; padding: 10px 14px;
+            background: var(--surface2); border: 1px solid var(--border2);
+            border-radius: 8px; color: var(--text);
+            font-size: 14px; font-family: inherit;
+            outline: none; transition: border-color 0.15s, background 0.15s;
+        }
+        .input-wrap input:focus { border-color: var(--accent); background: #1e1e24; }
+        .input-wrap input.error { border-color: var(--danger); }
+        .input-wrap input.ok    { border-color: var(--success); }
+        .input-wrap input[type="number"] { -moz-appearance: textfield; }
+        .input-wrap input[type="number"]::-webkit-inner-spin-button,
+        .input-wrap input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+        .prefix {
+            position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+            font-size: 14px; color: var(--text-sec); pointer-events: none;
+        }
+        .input-wrap.has-prefix input { padding-left: 26px; }
+
+        .err-msg {
+            font-size: 11px; color: var(--danger);
+            display: none; align-items: center; gap: 5px;
+            letter-spacing: 0.5px;
+        }
+        .err-msg i { font-size: 13px; }
+
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+        /* ── Upload zone ── */
+        .upload-zone {
+            border: 1.5px dashed var(--border2);
+            border-radius: 10px;
+            background: var(--surface2);
+            padding: 2rem 1rem;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            cursor: pointer; transition: border-color 0.2s, background 0.2s;
+            position: relative; text-align: center;
+        }
+        .upload-zone:hover, .upload-zone.drag { border-color: var(--accent); background: var(--accent-dim); }
+        .upload-zone.error-zone { border-color: var(--danger); }
+        .upload-zone.ok-zone   { border-color: var(--success); background: var(--success-dim); }
+        .upload-zone input[type="file"] {
+            position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .upload-icon { font-size: 32px; color: var(--text-dim); transition: color 0.2s; }
+        .upload-zone:hover .upload-icon, .upload-zone.drag .upload-icon { color: var(--accent); }
+        .upload-zone.ok-zone .upload-icon { color: var(--success); }
+        .upload-label { font-size: 13px; color: var(--text-sec); }
+        .upload-label strong { color: var(--text); }
+        .upload-hint { font-size: 11px; color: var(--text-dim); letter-spacing: 0.5px; }
+        .upload-preview {
+            width: 100%; max-height: 200px; border-radius: 8px; object-fit: cover;
+            display: none; margin-top: 4px;
+        }
+        .upload-filename { font-size: 12px; color: var(--success); display: none; align-items: center; gap: 6px; }
+
+        /* ── Divider ── */
+        .divider { border: none; border-top: 1px solid var(--border); margin: 0.25rem 0; }
+
+        /* ── Submit btn ── */
+        .btn-submit {
+            width: 100%; padding: 12px;
+            background: var(--accent); color: #0f0f11;
+            border: none; border-radius: 8px;
+            font-size: 14px; font-weight: 700; font-family: inherit;
+            letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; transition: opacity 0.15s, transform 0.1s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-submit:hover { opacity: 0.88; }
+        .btn-submit:active { transform: scale(0.99); }
+        .btn-submit:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* ── Loading dots ── */
+        .loading-dots { display: inline-flex; gap: 4px; }
+        .loading-dots span {
+            width: 5px; height: 5px; border-radius: 50%; background: currentColor;
+            animation: bounce 0.9s infinite;
+        }
+        .loading-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+
+        /* ── Success screen ── */
+        .success-screen {
+            display: none; flex-direction: column; align-items: center;
+            text-align: center; padding: 3rem 2rem; gap: 1rem;
+        }
+        .success-icon-wrap {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: var(--success-dim); border: 1px solid var(--success-border);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 30px; color: var(--success);
+            animation: pop 0.4s cubic-bezier(.36,.07,.19,.97);
+        }
+        @keyframes pop { 0%{transform:scale(0.5);opacity:0} 80%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+        .success-screen h2 { font-size: 16px; letter-spacing: 2px; text-transform: uppercase; }
+        .success-screen p  { font-size: 13px; color: var(--text-sec); }
+        .product-preview-card {
+            width: 100%; background: var(--surface2); border: 1px solid var(--border2);
+            border-radius: 10px; padding: 1rem 1.25rem;
+            display: flex; align-items: center; gap: 1rem; text-align: left;
+        }
+        .product-preview-img {
+            width: 56px; height: 56px; border-radius: 8px; object-fit: cover;
+            background: var(--surface); border: 1px solid var(--border2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: var(--text-dim); flex-shrink: 0;
+            overflow: hidden;
+        }
+        .product-preview-img img { width: 100%; height: 100%; object-fit: cover; }
+        .product-preview-info { flex: 1; }
+        .product-preview-name { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .product-preview-meta { font-size: 12px; color: var(--text-sec); display: flex; gap: 12px; }
+        .meta-item { display: flex; align-items: center; gap: 4px; }
+        .meta-item .accent { color: var(--accent); font-weight: 700; }
+
+        .btn-nuevo {
+            background: none; border: 1px solid var(--border2); border-radius: 8px;
+            padding: 9px 20px; color: var(--text-sec); font-size: 12px; font-family: inherit;
+            letter-spacing: 1px; cursor: pointer; transition: all 0.15s;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .btn-nuevo:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<div class="topbar">
+    <div class="topbar-left">
+        <h1><i class="ti ti-brush" style="vertical-align:-2px; margin-right:6px;"></i>Body Painting</h1>
+        <p>ADMINISTRACIÓN &nbsp;/&nbsp; NUEVO PRODUCTO</p>
+    </div>
+    <div class="badge"><i class="ti ti-lock"></i> ADMIN</div>
+</div>
+
+<div class="card">
+
+    <!-- Formulario -->
+    <div class="card-body" id="form-body">
+
+        <!-- Nombre -->
+        <div class="field">
+            <label><i class="ti ti-tag"></i> Nombre del producto <span class="required-dot"></span></label>
+            <div class="input-wrap">
+                <input type="text" id="nombre" placeholder="Ej: Pintura Aqua Profesional x12" autocomplete="off" />
+            </div>
+            <div class="err-msg" id="err-nombre"><i class="ti ti-alert-circle"></i><span></span></div>
+        </div>
+
+        <!-- Precio y Stock -->
+        <div class="row">
+            <div class="field">
+                <label><i class="ti ti-currency-dollar"></i> Precio <span class="required-dot"></span></label>
+                <div class="input-wrap has-prefix">
+                    <span class="prefix">$</span>
+                    <input type="number" id="precio" placeholder="0.00" min="0" step="0.01" />
+                </div>
+                <div class="err-msg" id="err-precio"><i class="ti ti-alert-circle"></i><span></span></div>
+            </div>
+
+            <div class="field">
+                <label><i class="ti ti-box"></i> Stock <span class="required-dot"></span></label>
+                <div class="input-wrap">
+                    <input type="number" id="stock" placeholder="0" min="0" step="1" />
+                </div>
+                <div class="err-msg" id="err-stock"><i class="ti ti-alert-circle"></i><span></span></div>
+            </div>
+        </div>
+
+        <!-- Descripción (opcional) -->
+        <div class="field">
+            <label><i class="ti ti-align-left"></i> Descripción <span style="font-weight:400; color:var(--text-dim); text-transform:none; letter-spacing:0;">(opcional)</span></label>
+            <div class="input-wrap">
+                <input type="text" id="descripcion" placeholder="Breve descripción del producto..." autocomplete="off" />
+            </div>
+        </div>
+
+        <hr class="divider" />
+
+        <!-- Upload imagen -->
+        <div class="field">
+            <label><i class="ti ti-photo"></i> Imagen del producto <span class="required-dot"></span></label>
+            <div class="upload-zone" id="upload-zone" ondragover="handleDrag(event)" ondragleave="handleDragLeave()" ondrop="handleDrop(event)">
+                <input type="file" id="imagen" accept=".jpg,.jpeg,.png" onchange="handleFile(this.files[0])" />
+                <i class="ti ti-cloud-upload upload-icon" id="upload-icon"></i>
+                <div class="upload-label" id="upload-label"><strong>Arrastrá</strong> o hacé click para subir</div>
+                <div class="upload-hint">Solo .JPG o .PNG · Máx. 5 MB</div>
+                <img class="upload-preview" id="upload-preview" alt="Vista previa" />
+                <div class="upload-filename" id="upload-filename"><i class="ti ti-circle-check"></i><span></span></div>
+            </div>
+            <div class="err-msg" id="err-imagen"><i class="ti ti-alert-circle"></i><span></span></div>
+        </div>
+
+        <hr class="divider" />
+
+        <button class="btn-submit" id="btn-submit" onclick="handleSubmit()">
+            <i class="ti ti-plus"></i> CREAR PRODUCTO
+        </button>
+
+    </div>
+
+    <!-- Pantalla de éxito -->
+    <div class="success-screen" id="success-screen">
+        <div class="success-icon-wrap"><i class="ti ti-check"></i></div>
+        <h2>¡Producto creado!</h2>
+        <p>El producto fue guardado correctamente en el sistema.</p>
+
+        <div class="product-preview-card">
+            <div class="product-preview-img" id="preview-img-wrap">
+                <i class="ti ti-photo"></i>
+            </div>
+            <div class="product-preview-info">
+                <div class="product-preview-name" id="preview-nombre">—</div>
+                <div class="product-preview-meta">
+                    <div class="meta-item"><i class="ti ti-currency-dollar"></i><span class="accent" id="preview-precio">—</span></div>
+                    <div class="meta-item"><i class="ti ti-box"></i><span id="preview-stock">—</span> en stock</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn-nuevo" onclick="resetForm()">
+            <i class="ti ti-plus"></i> Cargar otro producto
+        </button>
+    </div>
+
+</div>
+
+<script>
+    /* ── Estado de imagen ── */
+    let selectedFile = null;
+
+    /* ── Helpers de validación ── */
+    function setErr(id, msg) {
+        const el    = document.getElementById('err-' + id);
+        const input = document.getElementById(id);
+        if (msg) {
+            el.querySelector('span').textContent = msg;
+            el.style.display = 'flex';
+            if (input) { input.classList.add('error'); input.classList.remove('ok'); }
+        } else {
+            el.style.display = 'none';
+            if (input) { input.classList.remove('error'); }
+        }
+    }
+
+    function setOk(id) {
+        const input = document.getElementById(id);
+        if (input) { input.classList.add('ok'); input.classList.remove('error'); }
+        setErr(id, '');
+    }
+
+    /* ── Drag & drop ── */
+    function handleDrag(e) {
+        e.preventDefault();
+        document.getElementById('upload-zone').classList.add('drag');
+    }
+    function handleDragLeave() {
+        document.getElementById('upload-zone').classList.remove('drag');
+    }
+    function handleDrop(e) {
+        e.preventDefault();
+        document.getElementById('upload-zone').classList.remove('drag');
+        const file = e.dataTransfer.files[0];
+        if (file) handleFile(file);
+    }
+
+    /* ── Manejo de imagen ── */
+    function handleFile(file) {
+        const zone     = document.getElementById('upload-zone');
+        const icon     = document.getElementById('upload-icon');
+        const label    = document.getElementById('upload-label');
+        const preview  = document.getElementById('upload-preview');
+        const filename = document.getElementById('upload-filename');
+
+        if (!file) return;
+
+        // Validar extensión
+        const ext = file.name.split('.').pop().toLowerCase();
+        if (!['jpg', 'jpeg', 'png'].includes(ext)) {
+            zone.classList.add('error-zone');
+            zone.classList.remove('ok-zone');
+            setErr('imagen', 'Formato no permitido. Solo se aceptan archivos .JPG o .PNG');
+            selectedFile = null;
+            preview.style.display = 'none';
+            filename.style.display = 'none';
+            icon.className = 'ti ti-alert-circle upload-icon';
+            icon.style.color = 'var(--danger)';
+            label.innerHTML = '<strong>Archivo inválido</strong>, intentá con otro';
+            return;
+        }
+
+        // Validar tamaño (5 MB)
+        if (file.size > 5 * 1024 * 1024) {
+            zone.classList.add('error-zone');
+            zone.classList.remove('ok-zone');
+            setErr('imagen', 'El archivo supera el límite de 5 MB');
+            selectedFile = null;
+            return;
+        }
+
+        // OK
+        selectedFile = file;
+        setErr('imagen', '');
+        zone.classList.remove('error-zone');
+        zone.classList.add('ok-zone');
+        icon.className = 'ti ti-circle-check upload-icon';
+        icon.style.color = 'var(--success)';
+        label.innerHTML = '';
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+
+        filename.querySelector('span').textContent = file.name;
+        filename.style.display = 'flex';
+    }
+
+    /* ── Validación completa ── */
+    function validate() {
+        let valid = true;
+
+        const nombre = document.getElementById('nombre').value.trim();
+        const precio = document.getElementById('precio').value;
+        const stock  = document.getElementById('stock').value;
+
+        // Nombre
+        if (!nombre) {
+            setErr('nombre', 'El nombre del producto no puede estar vacío');
+            valid = false;
+        } else {
+            setOk('nombre');
+        }
+
+        // Precio
+        if (precio === '' || precio === null) {
+            setErr('precio', 'El precio es obligatorio');
+            valid = false;
+        } else if (parseFloat(precio) < 0) {
+            setErr('precio', 'El precio no puede ser negativo');
+            valid = false;
+        } else {
+            setOk('precio');
+        }
+
+        // Stock
+        if (stock === '' || stock === null) {
+            setErr('stock', 'El stock es obligatorio');
+            valid = false;
+        } else if (parseInt(stock) < 0) {
+            setErr('stock', 'El stock no puede ser negativo');
+            valid = false;
+        } else {
+            setOk('stock');
+        }
+
+        // Imagen
+        if (!selectedFile) {
+            setErr('imagen', 'Debés subir una imagen del producto (.JPG o .PNG)');
+            document.getElementById('upload-zone').classList.add('error-zone');
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    /* ── Envío ── */
+    async function handleSubmit() {
+        if (!validate()) return;
+
+        const btn = document.getElementById('btn-submit');
+        btn.disabled = true;
+        btn.innerHTML = 'GUARDANDO <span class="loading-dots"><span></span><span></span><span></span></span>';
+
+        const formData = new FormData();
+        formData.append('nombre',      document.getElementById('nombre').value.trim());
+        formData.append('precio',      document.getElementById('precio').value);
+        formData.append('stock',       document.getElementById('stock').value);
+        formData.append('descripcion', document.getElementById('descripcion').value.trim());
+        formData.append('imagen',      selectedFile);
+
+        try {
+            // ── Reemplazá por tu endpoint real de Spring Boot ──
+            // const res = await fetch('/api/productos', { method: 'POST', body: formData });
+            // if (!res.ok) throw new Error('Error del servidor');
+
+            // Simulación de éxito (quitar cuando conectes el backend)
+            await new Promise(r => setTimeout(r, 1600));
+            showSuccess();
+
+        } catch (err) {
+            alert('No se pudo conectar con el servidor. Intentá nuevamente.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ti ti-plus"></i> CREAR PRODUCTO';
+        }
+    }
+
+    /* ── Pantalla de éxito ── */
+    function showSuccess() {
+        const nombre = document.getElementById('nombre').value.trim();
+        const precio = parseFloat(document.getElementById('precio').value).toLocaleString('es-AR', { minimumFractionDigits: 2 });
+        const stock  = document.getElementById('stock').value;
+
+        document.getElementById('preview-nombre').textContent = nombre;
+        document.getElementById('preview-precio').textContent = '$' + precio;
+        document.getElementById('preview-stock').textContent  = stock;
+
+        if (selectedFile) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const wrap = document.getElementById('preview-img-wrap');
+                wrap.innerHTML = `<img src="${e.target.result}" alt="preview" />`;
+            };
+            reader.readAsDataURL(selectedFile);
+        }
+
+        document.getElementById('form-body').style.display = 'none';
+        document.getElementById('success-screen').style.display = 'flex';
+    }
+
+    /* ── Reset ── */
+    function resetForm() {
+        document.getElementById('nombre').value      = '';
+        document.getElementById('precio').value      = '';
+        document.getElementById('stock').value       = '';
+        document.getElementById('descripcion').value = '';
+        document.getElementById('imagen').value      = '';
+        selectedFile = null;
+
+        ['nombre','precio','stock'].forEach(id => {
+            const input = document.getElementById(id);
+            input.classList.remove('ok','error');
+            setErr(id, '');
+        });
+
+        const zone    = document.getElementById('upload-zone');
+        const icon    = document.getElementById('upload-icon');
+        const label   = document.getElementById('upload-label');
+        const preview = document.getElementById('upload-preview');
+        const fname   = document.getElementById('upload-filename');
+
+        zone.classList.remove('ok-zone','error-zone','drag');
+        icon.className = 'ti ti-cloud-upload upload-icon';
+        icon.style.color = '';
+        label.innerHTML = '<strong>Arrastrá</strong> o hacé click para subir';
+        preview.style.display = 'none';
+        preview.src = '';
+        fname.style.display = 'none';
+        setErr('imagen', '');
+
+        const btn = document.getElementById('btn-submit');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="ti ti-plus"></i> CREAR PRODUCTO';
+
+        document.getElementById('success-screen').style.display = 'none';
+        document.getElementById('form-body').style.display = 'flex';
+    }
+
+    /* ── Limpiar error al escribir ── */
+    ['nombre','precio','stock'].forEach(id => {
+        document.getElementById(id).addEventListener('input', () => setErr(id, ''));
+    });
+</script>
+
+</body>
+</html>
