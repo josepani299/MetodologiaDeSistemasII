@@ -4,6 +4,7 @@ import MetodologiaDeSistema.Proyecto.feature.Carrito.Models.Carrito;
 import MetodologiaDeSistema.Proyecto.feature.Carrito.Models.CarritoItem;
 import MetodologiaDeSistema.Proyecto.feature.Carrito.Repository.CarritoItemRepository;
 import MetodologiaDeSistema.Proyecto.feature.Carrito.Repository.CarritoRepository;
+import MetodologiaDeSistema.Proyecto.feature.Carrito.Service.Interface.CarritoService;
 import MetodologiaDeSistema.Proyecto.feature.Producto.Models.Producto;
 import MetodologiaDeSistema.Proyecto.feature.Producto.Repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
