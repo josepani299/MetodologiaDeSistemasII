@@ -10,42 +10,60 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class Securityconfig {
+public class SecurityConfig {
+
     @Bean
     public PasswordEncoder passwordEncoder() {
+
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http
-        .csrf(csrf -> csrf.disable())
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/clientes/**").permitAll()
-            .requestMatchers("/api/clientes/registro").permitAll()
-            .requestMatchers("/api/productos/**").permitAll()
-            .requestMatchers("/api/producto/registro").permitAll()
-            .requestMatchers("/api/pedidos/**").permitAll()
-            .anyRequest().authenticated()
-        );
 
-    return http.build();
+        http
+                .csrf(csrf -> csrf.disable())
 
+                .headers(headers ->
+                        headers.frameOptions(frame -> frame.disable())
+                )
 
-}
+                .authorizeHttpRequests(auth -> auth
 
-@Bean
-public WebMvcConfigurer corsConfigurer() {
+                        .requestMatchers("/h2-console/**").permitAll()
 
-    return new WebMvcConfigurer() {
+                        .requestMatchers("/html/**").permitAll()
+                        .requestMatchers("/css/**").permitAll()
+                        .requestMatchers("/js/**").permitAll()
 
-        @Override
-        public void addCorsMappings(CorsRegistry registry) {
+                        .requestMatchers("/carrito/**").permitAll()
 
-            registry.addMapping("/**")
-                    .allowedOrigins("http://localhost:5173")
-                    .allowedMethods("*");
-        }
-    };
-}
+                        .requestMatchers("/api/clientes/**").permitAll()
+                        .requestMatchers("/api/clientes/registro").permitAll()
+
+                        .requestMatchers("/api/productos/**").permitAll()
+                        .requestMatchers("/api/producto/registro").permitAll()
+
+                        .requestMatchers("/api/pedidos/**").permitAll()
+
+                        .anyRequest().authenticated()
+                );
+
+        return http.build();
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+
+        return new WebMvcConfigurer() {
+
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+
+                registry.addMapping("/**")
+                        .allowedOrigins("http://localhost:5173")
+                        .allowedMethods("*");
+            }
+        };
+    }
 }
