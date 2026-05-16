@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-public class SecurityConfig {
+public class Securityconfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -45,6 +45,8 @@ public class SecurityConfig {
                         .requestMatchers("/api/producto/registro").permitAll()
 
                         .requestMatchers("/api/pedidos/**").permitAll()
+
+                         .requestMatchers("/kits/**").permitAll()
 
                         .anyRequest().authenticated()
                 );
