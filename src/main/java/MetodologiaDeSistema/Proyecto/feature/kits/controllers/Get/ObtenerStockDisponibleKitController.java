@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import MetodologiaDeSistema.Proyecto.feature.kits.services.KitService;
 
 @RestController
-@RequestMapping("/kits")
+@RequestMapping("api/kits")
 public class ObtenerStockDisponibleKitController {
 
     @Autowired

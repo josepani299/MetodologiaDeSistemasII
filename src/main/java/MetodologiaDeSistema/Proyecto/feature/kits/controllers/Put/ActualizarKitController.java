@@ -13,7 +13,7 @@ import MetodologiaDeSistema.Proyecto.feature.kits.models.Kit;
 import MetodologiaDeSistema.Proyecto.feature.kits.services.KitService;
 
 @RestController
-@RequestMapping("/kits")
+@RequestMapping("api/kits")
 public class ActualizarKitController {
 
     @Autowired

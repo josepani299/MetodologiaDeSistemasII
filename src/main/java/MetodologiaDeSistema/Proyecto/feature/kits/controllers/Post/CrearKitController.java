@@ -14,7 +14,7 @@ import MetodologiaDeSistema.Proyecto.feature.kits.services.KitService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/kits")
+@RequestMapping("api/kits")
 public class CrearKitController {
 
     @Autowired
