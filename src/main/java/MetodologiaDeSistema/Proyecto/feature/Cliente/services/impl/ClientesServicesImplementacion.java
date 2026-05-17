@@ -2,6 +2,8 @@ package MetodologiaDeSistema.Proyecto.feature.Cliente.services.impl;
 
 import java.time.LocalDateTime;
 
+import MetodologiaDeSistema.Proyecto.feature.Carrito.Models.Carrito;
+import MetodologiaDeSistema.Proyecto.feature.Carrito.Repository.CarritoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,7 +15,9 @@ import MetodologiaDeSistema.Proyecto.feature.Cliente.repositories.ClienteReposit
 
 @Service
 public class ClientesServicesImplementacion {
-    
+
+
+
     @Autowired
     private ClienteRepository clienterepository;
 
@@ -31,6 +35,10 @@ public class ClientesServicesImplementacion {
         nuevoCliente.setNombre(registroRequestDto.getNombre());
         nuevoCliente.setApellido(registroRequestDto.getApellido());
         nuevoCliente.setEmail(registroRequestDto.getEmail());
+
+        Carrito carrito = new Carrito();
+
+        nuevoCliente.setCarrito(carrito);
 
         // Encriptar la contraseña antes de guardarla
         nuevoCliente.setPassword(passwordEncoder.encode(registroRequestDto.getPassword()));

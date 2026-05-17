@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import MetodologiaDeSistema.Proyecto.feature.Carrito.Models.Carrito;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -54,6 +55,10 @@ public class Cliente {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<DireccionEnvio> direccionesEnvio = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "carrito_id")
+    private Carrito carrito;
 
     @Enumerated(EnumType.STRING)
     private Rol rol = Rol.CLIENTE;

@@ -3,19 +3,20 @@ package MetodologiaDeSistema.Proyecto.feature.Carrito.controllers.post;
 import MetodologiaDeSistema.Proyecto.feature.Carrito.Dtos.Request.AgregarProductoRequestDto;
 import MetodologiaDeSistema.Proyecto.feature.Carrito.Service.Interface.CarritoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/carrito")
+@RequestMapping("/api/carrito")
 public class AgregarProductoController {
 
     @Autowired
     private CarritoService carritoService;
 
     @PostMapping("/{id}/items")
-    public void agregarProducto(@PathVariable Long id,
-                                @RequestBody AgregarProductoRequestDto dto) {
-
+    public ResponseEntity<Void> agregarProducto(@PathVariable Long id,
+                                                @RequestBody AgregarProductoRequestDto dto) {
         carritoService.agregarProducto(id, dto.getProductoId(), dto.getCantidad());
+        return ResponseEntity.ok().build();
     }
 }

@@ -40,7 +40,10 @@ public class AuthController {
                 "token", token,
                 "rol", cliente.getRol().name(),
                 "id", cliente.getId(),
-                "nombre", cliente.getNombre()
+                "nombre", cliente.getNombre(),
+                "carritoId", cliente.getCarrito() != null ? cliente.getCarrito().getId() : null
         ));
+
+
     }
 }
