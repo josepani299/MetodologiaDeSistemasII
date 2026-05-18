@@ -17,7 +17,7 @@ public class DarDeBajaController {
     @Autowired
     private ProductoService productoService;
 
-    @DeleteMapping("/{id}/baja")
+    @DeleteMapping("/{id}")
     public ResponseEntity<ProductoResponseDto> darDeBaja(@PathVariable Long id) {
         return ResponseEntity.ok(productoService.darDeBaja(id));
     }

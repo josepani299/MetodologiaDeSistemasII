@@ -5,9 +5,11 @@ import MetodologiaDeSistema.Proyecto.feature.Cliente.models.Cliente;
 import MetodologiaDeSistema.Proyecto.feature.Cliente.repositories.ClienteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -28,22 +30,27 @@ public class AuthController {
         String email = body.get("email");
         String password = body.get("password");
 
-        Cliente cliente = clienteRepository.findByEmail(email)
-                .orElse(null);
+        System.out.println("EMAIL: " + email);
+        System.out.println("PASSWORD: " + password);
+
+        Cliente cliente = clienteRepository.findByEmail(email).orElse(null);
+
+
 
         if (cliente == null || !passwordEncoder.matches(password, cliente.getPassword())) {
             return ResponseEntity.status(401).body(Map.of("message", "Credenciales inválidas"));
         }
 
         String token = jwtService.generarToken(cliente.getEmail(), cliente.getRol().name());
-        return ResponseEntity.ok(Map.of(
-                "token", token,
-                "rol", cliente.getRol().name(),
-                "id", cliente.getId(),
-                "nombre", cliente.getNombre(),
-                "carritoId", cliente.getCarrito() != null ? cliente.getCarrito().getId() : null
-        ));
 
-
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("rol", cliente.getRol().name());
+        response.put("id", cliente.getId());
+        response.put("nombre", cliente.getNombre());
+        response.put("carritoId", cliente.getCarrito() != null ? cliente.getCarrito().getId() : null);
+        return ResponseEntity.ok(response);
     }
+
+
 }

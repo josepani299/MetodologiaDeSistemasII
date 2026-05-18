@@ -2,6 +2,8 @@ package MetodologiaDeSistema.Proyecto.feature.kits.services;
 
 import java.util.List;
 import java.util.Optional;
+
+import MetodologiaDeSistema.Proyecto.feature.kits.dtos.request.CrearKitRequestDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,15 +27,22 @@ public class KitService {
     private ProductoRepository productoRepository;
 
     @Transactional
-    public Kit crearKit(String nombre, String descripcion, Double precio) {
+    public Kit crearKit(CrearKitRequestDto dto) {
         Kit kit = new Kit();
-        kit.setNombre(nombre);
-        kit.setDescripcion(descripcion);
-        kit.setPrecio(precio);
+        kit.setNombre(dto.getNombre());
+        kit.setDescripcion(dto.getDescripcion());
+        kit.setPrecio(dto.getPrecio());
         kit.setEstado(true);
-        return kitRepository.save(kit);
-    }
+        kitRepository.save(kit);
 
+        if (dto.getComponentes() != null) {
+            dto.getComponentes().stream()
+                    .filter(c -> "PRODUCTO".equalsIgnoreCase(c.getTipo()))
+                    .forEach(c -> agregarProductoAKit(kit.getId(), c.getId(), 1));
+        }
+
+        return kit;
+    }
     @Transactional
     public KitProducto agregarProductoAKit(Long kitId, Long productoId, Integer cantidad) {
         Kit kit = kitRepository.findById(kitId)

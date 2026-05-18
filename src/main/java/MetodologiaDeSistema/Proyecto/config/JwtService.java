@@ -21,7 +21,7 @@ public class JwtService {
     public String generarToken(String email, String rol) {
         return Jwts.builder()
                 .subject(email)
-                .claims(Map.of("rol", rol))
+                .claim("rol", rol)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION))
                 .signWith(getKey())

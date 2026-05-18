@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import MetodologiaDeSistema.Proyecto.feature.Carrito.Repository.CarritoItemRepository;
+import MetodologiaDeSistema.Proyecto.feature.Cliente.models.Cliente;
+import MetodologiaDeSistema.Proyecto.feature.Cliente.repositories.ClienteRepository;
 import MetodologiaDeSistema.Proyecto.feature.Direccion.models.DireccionEnvio;
 import MetodologiaDeSistema.Proyecto.feature.Direccion.repository.DireccionEnvioRepository;
+import MetodologiaDeSistema.Proyecto.feature.Pedido.dtos.PedidoItemResponseDto;
+import MetodologiaDeSistema.Proyecto.feature.Pedido.dtos.PedidoResponseDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +46,9 @@ public class PedidoServiceImpl implements PedidoService {
     @Autowired
     private CarritoItemRepository carritoItemRepository;
 
+    @Autowired
+    private ClienteRepository clienteRepository;
+
     @Transactional
     @Override
     public Long confirmarPedido(Long carritoId, ConfirmarPedidoDto dto) {
@@ -54,6 +61,12 @@ public class PedidoServiceImpl implements PedidoService {
         }
 
         Pedido pedido = new Pedido();
+
+        Cliente cliente = clienteRepository.findByCarritoId(carritoId)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+        pedido.setCliente(cliente);
+
+
 
         DireccionEnvio dir = direccionEnvioRepository.findById(dto.getDireccionEnvioId())
                 .orElseThrow(() -> new RuntimeException("Dirección no encontrada"));
@@ -125,5 +138,29 @@ public class PedidoServiceImpl implements PedidoService {
         PedidoRepository.save(pedido);
 
         PedidoEmailService.enviarCambioEstado("cliente@gmail.com", pedido.getId(), nuevoEstado);
+    }
+    @Override
+    public List<PedidoResponseDto> obtenerTodos() {
+        return PedidoRepository.findAll().stream().map(p -> {
+            PedidoResponseDto dto = new PedidoResponseDto();
+            dto.setId(p.getId());
+            dto.setClienteNombre(p.getCliente() != null
+                    ? p.getCliente().getNombre() + " " + p.getCliente().getApellido()
+                    : "—");
+            dto.setFecha(p.getFecha());
+            dto.setDireccionEnvio(p.getDireccionEnvio());
+            dto.setTotal(p.getTotal());
+            dto.setEstado(p.getEstado().name());
+            dto.setMedioPago(p.getMedioPago().name());
+            dto.setItems(p.getItems().stream().map(i -> {
+                PedidoItemResponseDto itemDto = new PedidoItemResponseDto();
+                itemDto.setId(i.getId());
+                itemDto.setProductoNombre(i.getProducto().getNombre());
+                itemDto.setCantidad(i.getCantidad());
+                itemDto.setSubtotal(i.getSubtotal());
+                return itemDto;
+            }).toList());
+            return dto;
+        }).toList();
     }
 }

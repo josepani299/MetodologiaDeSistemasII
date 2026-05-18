@@ -34,11 +34,23 @@ public class DataInitializer implements CommandLineRunner {
             admin.setNombre("Admin");
             admin.setApellido("Admin");
             admin.setEmail("admin@admin.com");
-            admin.setPassword(passwordEncoder.encode("admin123"));
+            admin.setPassword(passwordEncoder.encode("password"));
             admin.setRol(Rol.ADMIN);
             Carrito carrito = new Carrito();
             admin.setCarrito(carrito);
             clienteRepository.save(admin);
+        }
+
+        if (clienteRepository.findByEmail("vendedor@vendedor.com").isEmpty()) {
+            Cliente vendedor = new Cliente();
+            vendedor.setNombre("Vendedor");
+            vendedor.setApellido("Demo");
+            vendedor.setEmail("vendedor@vendedor.com");
+            vendedor.setPassword(passwordEncoder.encode("password"));
+            vendedor.setRol(Rol.VENDEDOR);
+            Carrito carrito = new Carrito();
+            vendedor.setCarrito(carrito);
+            clienteRepository.save(vendedor);
         }
 
         if (productoRepository.count() == 0) {
@@ -54,4 +66,6 @@ public class DataInitializer implements CommandLineRunner {
             productoRepository.save(new Producto(null, "Removedor Especializado", "Snazaroo", 1100.0, 5, 2, true));
         }
     }
+
+
 }
