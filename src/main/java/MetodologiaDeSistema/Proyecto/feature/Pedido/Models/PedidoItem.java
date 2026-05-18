@@ -1,6 +1,7 @@
 package MetodologiaDeSistema.Proyecto.feature.Pedido.Models;
 
 import MetodologiaDeSistema.Proyecto.feature.Producto.Models.Producto;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,5 +24,6 @@ public class PedidoItem {
     private Producto producto;
 
     @ManyToOne
+    @JsonBackReference
     private Pedido pedido;
 }

@@ -12,7 +12,7 @@ import MetodologiaDeSistema.Proyecto.feature.kits.models.Kit;
 import MetodologiaDeSistema.Proyecto.feature.kits.services.KitService;
 
 @RestController
-@RequestMapping("api/kits")
+@RequestMapping("/api/kits")
 public class ObtenerTodosLosKitsController {
 
     @Autowired

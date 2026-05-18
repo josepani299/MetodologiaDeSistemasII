@@ -29,6 +29,6 @@ public class CrearDireccionRequestDtos {
     @Min(value = 1, message = "El número de calle debe ser mayor a 0")
     private Integer numeroCalle;
 
-    @NotBlank(message = "El piso/departamento es requerido")
+
     private String pisoDepto;
 }

@@ -12,17 +12,17 @@ import MetodologiaDeSistema.Proyecto.feature.Pedido.Service.PedidoService;
 import MetodologiaDeSistema.Proyecto.feature.Pedido.dtos.ConfirmarPedidoDto;
 import jakarta.validation.Valid;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/pedidos")
 public class PedidoController {
     @Autowired
     private PedidoService pedidoService;
-    
-    @PostMapping("confirmar/{carritoId}")
-    public ResponseEntity<?> confirmarPedido(
-        @PathVariable Long carritoId,
-        @RequestBody @Valid ConfirmarPedidoDto dto){
-            pedidoService.confirmarPedido(carritoId, dto);
-            return ResponseEntity.ok("Pedido confirmado correctamente");
-        }
+
+    @PostMapping
+    public ResponseEntity<?> confirmarPedido(@RequestBody @Valid ConfirmarPedidoDto dto) {
+        Long id = pedidoService.confirmarPedido(dto.getCarritoId(), dto);
+        return ResponseEntity.ok(Map.of("id", id));
+    }
 }

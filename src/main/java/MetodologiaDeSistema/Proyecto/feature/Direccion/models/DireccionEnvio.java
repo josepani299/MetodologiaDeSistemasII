@@ -64,8 +64,7 @@ public class DireccionEnvio {
     @Column(name = "numero_calle")
     private Integer numeroCalle;
 
-    @NotBlank(message = "El piso/departamento es requerido")
-    @Column(name = "piso_depto")
+    @Column(name = "piso_depto", nullable = true)
     private String pisoDepto;
 
     @CreationTimestamp

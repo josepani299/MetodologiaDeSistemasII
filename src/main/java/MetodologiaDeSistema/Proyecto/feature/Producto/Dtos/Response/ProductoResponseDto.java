@@ -24,4 +24,6 @@
         private Boolean stockBajo;
         
         private boolean activo;
+
+        private String imagenUrl;
     }
