@@ -1,6 +1,8 @@
 package MetodologiaDeSistema.Proyecto.feature.Cliente.services.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -64,6 +66,7 @@ public RegistroResponseDtos obtenerClientePorId(Long id) {
         respuesta.setEmail(cliente.getEmail());
         respuesta.setMensaje("Cliente encontrado exitosamente.");
         respuesta.setExitoso(true);
+        respuesta.setDireccionesEnvio(cliente.getDireccionesEnvio());
         return respuesta;
     } else {
         return null; // O puedes lanzar una excepción personalizada si prefieres

@@ -1,7 +1,8 @@
 package MetodologiaDeSistema.Proyecto.feature.Cliente.dtos.response;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
+
 
 import MetodologiaDeSistema.Proyecto.feature.Direccion.models.DireccionEnvio;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,6 @@ public class RegistroResponseDtos {
     private String mensaje;
     private boolean exitoso;
     private LocalDateTime fechaRegistro;
-    private Set<DireccionEnvio> direccionesEnvio;
+    private List<DireccionEnvio> direccionesEnvio;
     
 }
