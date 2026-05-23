@@ -14,7 +14,7 @@ import MetodologiaDeSistema.Proyecto.feature.kits.services.KitService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("api/kits")
+@RequestMapping("/api/kits")
 public class CrearKitController {
 
     @Autowired
@@ -22,7 +22,7 @@ public class CrearKitController {
 
     @PostMapping
     public ResponseEntity<Kit> crearKit(@Valid @RequestBody CrearKitRequestDto dto) {
-        Kit kit = kitService.crearKit(dto.getNombre(), dto.getDescripcion(), dto.getPrecio());
+        Kit kit = kitService.crearKit(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(kit);
     }
 }

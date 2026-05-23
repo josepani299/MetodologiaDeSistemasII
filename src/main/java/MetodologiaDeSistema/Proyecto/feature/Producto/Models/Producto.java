@@ -39,4 +39,7 @@ public class Producto {
 
     private boolean activo;
 
+    @Column(columnDefinition = "TEXT")
+    private String imagenUrl;
+
 }

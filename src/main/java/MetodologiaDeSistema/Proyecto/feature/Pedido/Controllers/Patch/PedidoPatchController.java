@@ -26,6 +26,6 @@ public class PedidoPatchController {
                 pedidoId,
                 dto.getNuevoEstado()
             );
-            return ResponseEntity.ok("Estado actualizado correctamente");
+        return ResponseEntity.ok().build();
         }
 }
