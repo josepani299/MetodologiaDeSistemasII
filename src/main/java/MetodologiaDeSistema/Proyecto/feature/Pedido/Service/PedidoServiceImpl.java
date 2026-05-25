@@ -137,7 +137,7 @@ public class PedidoServiceImpl implements PedidoService {
         pedido.setEstado(nuevoEstado);
         PedidoRepository.save(pedido);
 
-        PedidoEmailService.enviarCambioEstado("cliente@gmail.com", pedido.getId(), nuevoEstado);
+        PedidoEmailService.enviarCambioEstado("cliente@gmail.com", pedido.getId(), nuevoEstado.name());
     }
     @Override
     public List<PedidoResponseDto> obtenerTodos() {
