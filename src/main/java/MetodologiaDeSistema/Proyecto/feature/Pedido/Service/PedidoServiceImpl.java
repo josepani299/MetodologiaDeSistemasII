@@ -1,7 +1,9 @@
 package MetodologiaDeSistema.Proyecto.feature.Pedido.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import MetodologiaDeSistema.Proyecto.feature.Carrito.Repository.CarritoItemRepository;
 import MetodologiaDeSistema.Proyecto.feature.Cliente.models.Cliente;
@@ -10,6 +12,8 @@ import MetodologiaDeSistema.Proyecto.feature.Direccion.models.DireccionEnvio;
 import MetodologiaDeSistema.Proyecto.feature.Direccion.repository.DireccionEnvioRepository;
 import MetodologiaDeSistema.Proyecto.feature.Pedido.dtos.PedidoItemResponseDto;
 import MetodologiaDeSistema.Proyecto.feature.Pedido.dtos.PedidoResponseDto;
+import MetodologiaDeSistema.Proyecto.feature.Pedido.dtos.ProductoMasVendidoDto;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -163,4 +167,47 @@ public class PedidoServiceImpl implements PedidoService {
             return dto;
         }).toList();
     }
+
+    @Override
+public List<ProductoMasVendidoDto> obtenerProductosMasVendidos(
+        int mes,
+        int anio) {
+
+    List<Pedido> pedidos = PedidoRepository.findAll();
+
+    Map<String, Integer> ventas = new HashMap<>();
+
+    for (Pedido pedido : pedidos) {
+
+        if (pedido.getFecha().getMonthValue() == mes &&
+            pedido.getFecha().getYear() == anio) {
+
+            for (PedidoItem item : pedido.getItems()) {
+
+                String nombreProducto =
+                        item.getProducto().getNombre();
+
+                Integer cantidad = item.getCantidad();
+
+                ventas.put(
+                        nombreProducto,
+                        ventas.getOrDefault(nombreProducto, 0)
+                                + cantidad
+                );
+            }
+        }
+    }
+
+    if (ventas.isEmpty()) {
+    return new ArrayList<>();
+    }
+
+    return ventas.entrySet()
+            .stream()
+            .sorted((a, b) ->
+                    b.getValue().compareTo(a.getValue()))
+            .map(e -> new ProductoMasVendidoDto(e.getKey(), e.getValue())
+            )
+            .toList();
+}
 }
