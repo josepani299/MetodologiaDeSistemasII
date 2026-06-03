@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/carrito")
+@RequestMapping("/api/carrito")
 public class GetCarritoController {
 
     @Autowired

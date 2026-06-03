@@ -1,15 +1,11 @@
 package MetodologiaDeSistema.Proyecto.feature.Pedido.Models;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import MetodologiaDeSistema.Proyecto.feature.Cliente.models.Cliente;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
@@ -30,5 +26,18 @@ public class Pedido {
     private MedioPago medioPago;
 
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<PedidoItem> items;
+
+    @ManyToOne
+    @JoinColumn(name = "cliente_id")
+    private Cliente cliente;
+
+    @Column(updatable = false)
+    private LocalDateTime fecha;
+
+    @PrePersist
+    protected void onCreate() {
+        this.fecha = LocalDateTime.now();
+    }
 }

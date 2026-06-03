@@ -5,15 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import MetodologiaDeSistema.Proyecto.feature.Carrito.Models.Carrito;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -62,6 +55,13 @@ public class Cliente {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.EAGER)
     @Fetch(FetchMode.SUBSELECT)
     private List<DireccionEnvio> direccionesEnvio = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "carrito_id")
+    private Carrito carrito;
+
+    @Enumerated(EnumType.STRING)
+    private Rol rol = Rol.CLIENTE;
 
 
 }
