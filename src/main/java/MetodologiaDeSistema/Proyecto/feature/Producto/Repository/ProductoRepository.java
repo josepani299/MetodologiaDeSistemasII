@@ -17,6 +17,7 @@ import MetodologiaDeSistema.Proyecto.feature.Producto.Models.Producto;
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByNombreContainingIgnoreCaseAndActivoTrue(String nombre);
     List<Producto> findByActivoTrue();
+    List<Producto> findByStockActualLessThanEqual(Integer stock);
     default boolean existeEnKitActivo(Long productoId) {
     return false;
 }
