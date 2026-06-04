@@ -1,9 +1,13 @@
 package MetodologiaDeSistema.Proyecto.feature.Producto.Service.Impl;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.List;
 
+import MetodologiaDeSistema.Proyecto.config.WebhookService;
+import MetodologiaDeSistema.Proyecto.feature.Producto.Dtos.Response.StockCriticoResponseDto;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,11 +20,13 @@ import MetodologiaDeSistema.Proyecto.feature.Producto.Models.Producto;
 import MetodologiaDeSistema.Proyecto.feature.Producto.Repository.ProductoRepository;
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @RequiredArgsConstructor
 public class ProductoService {
 
     private final ProductoRepository productoRepository;
+    private final WebhookService webhookService;
 
     public ProductoResponseDto crearProducto(ProductoCreateDto dto, MultipartFile imagen) {
 
@@ -92,4 +98,34 @@ public class ProductoService {
         dto.setImagenUrl(p.getImagenUrl());
         return dto;
     }
+
+    @Value("${features.stock-critico.mock:true}")
+    private boolean useMock;
+
+    public List<StockCriticoResponseDto> getStockCritico() {
+        List<StockCriticoResponseDto> productos = useMock
+                ? getMockStockCritico()
+                : getRealStockCritico();
+
+        webhookService.dispararWebhookStockCritico(productos);
+
+        return productos;
+    }
+
+    private List<StockCriticoResponseDto> getRealStockCritico() {
+        LocalDateTime hace3Meses = LocalDateTime.now().minusMonths(3);
+        return productoRepository.findStockCriticoConVentas(hace3Meses);
+    }
+
+    private List<StockCriticoResponseDto> getMockStockCritico() {
+        return List.of(
+                new StockCriticoResponseDto(1L, "Auriculares Bluetooth Pro", "Sony",     2, 5,  47L),
+                new StockCriticoResponseDto(2L, "Teclado Mecánico RGB",      "Logitech", 1, 10, 63L),
+                new StockCriticoResponseDto(3L, "Mouse Inalámbrico",         "Razer",    0, 8,  38L),
+                new StockCriticoResponseDto(4L, "Webcam Full HD 1080p",      "Logitech", 3, 5,  29L),
+                new StockCriticoResponseDto(5L, "Hub USB-C 7 Puertos",       "Anker",    2, 6,  51L)
+        );
+    }
+
+
 }
