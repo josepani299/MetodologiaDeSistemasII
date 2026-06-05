@@ -50,6 +50,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/pedidos/**").hasAnyRole("ADMIN", "VENDEDOR", "CLIENTE")
                         .requestMatchers(HttpMethod.POST, "/api/pedidos/**").hasAnyRole("ADMIN", "VENDEDOR", "CLIENTE")
                         .requestMatchers(HttpMethod.PATCH, "/api/pedidos/**").hasAnyRole("ADMIN", "VENDEDOR")
+                        .requestMatchers("/api/cupones/**").permitAll()
+                        .requestMatchers("/api/clientes/**").permitAll()
                         .requestMatchers("/api/clientes/**", "/api/carrito/**", "/api/direcciones/**").hasAnyRole("CLIENTE", "ADMIN", "VENDEDOR")
                         .anyRequest().authenticated()
                 )
