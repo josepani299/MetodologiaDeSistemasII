@@ -15,6 +15,8 @@
 
         private String marca;
 
+        private String descripcion;
+
         private Double precio;
 
         private Integer stockActual;

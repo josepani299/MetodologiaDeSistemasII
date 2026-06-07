@@ -19,6 +19,9 @@ public class ProductoCreateDto {
     @NotBlank(message = "La marca es obligatoria")
     private String marca;
 
+    @NotBlank(message = "El producto debe tener descripcion")
+    private String descripcion;
+
     @NotNull
     @Positive(message = "El precio debe ser positivo")
     private Double precio;

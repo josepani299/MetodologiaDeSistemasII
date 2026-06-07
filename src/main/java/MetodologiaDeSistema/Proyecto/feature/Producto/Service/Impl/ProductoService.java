@@ -33,6 +33,7 @@ public class ProductoService {
         Producto producto = new Producto();
         producto.setNombre(dto.getNombre());
         producto.setMarca(dto.getMarca());
+        producto.setDescripcion(dto.getDescripcion());
         producto.setPrecio(dto.getPrecio());
         producto.setStockActual(dto.getStockActual());
         producto.setStockMinimo(dto.getStockMinimo());
@@ -90,6 +91,7 @@ public class ProductoService {
         dto.setId(p.getId());
         dto.setNombre(p.getNombre());
         dto.setMarca(p.getMarca());
+        dto.setDescripcion(p.getDescripcion());
         dto.setPrecio(p.getPrecio());
         dto.setStockActual(p.getStockActual());
         dto.setStockMinimo(p.getStockMinimo());

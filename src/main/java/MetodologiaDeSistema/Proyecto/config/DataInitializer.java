@@ -54,16 +54,16 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         if (productoRepository.count() == 0) {
-            productoRepository.save(new Producto(null, "Pintura Facial Blanca", "Mehron", 1500.0, 20, 5, true,null));
-            productoRepository.save(new Producto(null, "Pintura Facial Negra", "Mehron", 1500.0, 15, 5, true,null));
-            productoRepository.save(new Producto(null, "Pintura Facial Roja", "Snazaroo", 1200.0, 25, 5, true,null));
-            productoRepository.save(new Producto(null, "Pintura Facial Azul", "Snazaroo", 1200.0, 18, 5, true,null));
-            productoRepository.save(new Producto(null, "Pintura UV Verde", "Wolfe", 2200.0, 10, 3, true,null));
-            productoRepository.save(new Producto(null, "Pintura UV Naranja", "Wolfe", 2200.0, 8, 3, true,null));
-            productoRepository.save(new Producto(null, "Set Pinceles Profesional", "Kryolan", 3500.0, 12, 2, true,null));
-            productoRepository.save(new Producto(null, "Esponja Degradado", "Mehron", 800.0, 30, 8, true,null));
-            productoRepository.save(new Producto(null, "Fijador Spray", "Kryolan", 2800.0, 7, 2, true,null));
-            productoRepository.save(new Producto(null, "Removedor Especializado", "Snazaroo", 1100.0, 5, 2, true,null));
+            productoRepository.save(new Producto(null, "Pintura Facial Blanca", "Mehron",null, 1500.0, 20, 5, true,null));
+            productoRepository.save(new Producto(null, "Pintura Facial Negra", "Mehron",null, 1500.0, 15, 5, true,null));
+            productoRepository.save(new Producto(null, "Pintura Facial Roja", "Snazaroo",null, 1200.0, 25, 5, true,null));
+            productoRepository.save(new Producto(null, "Pintura Facial Azul", "Snazaroo",null, 1200.0, 18, 5, true,null));
+            productoRepository.save(new Producto(null, "Pintura UV Verde", "Wolfe",null, 2200.0, 10, 3, true,null));
+            productoRepository.save(new Producto(null, "Pintura UV Naranja", "Wolfe",null, 2200.0, 8, 3, true,null));
+            productoRepository.save(new Producto(null, "Set Pinceles Profesional", "Kryolan",null, 3500.0, 12, 2, true,null));
+            productoRepository.save(new Producto(null, "Esponja Degradado", "Mehron",null, 800.0, 30, 8, true,null));
+            productoRepository.save(new Producto(null, "Fijador Spray", "Kryolan",null, 2800.0, 7, 2, true,null));
+            productoRepository.save(new Producto(null, "Removedor Especializado", "Snazaroo",null, 1100.0, 5, 2, true,null));
         }
     }
 

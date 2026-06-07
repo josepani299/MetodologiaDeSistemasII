@@ -27,6 +27,9 @@ public class Producto {
     
     @Column
     private String marca;
+
+    @Column(columnDefinition = "TEXT")
+    private String descripcion;
     
     @Column
     private Double precio;
