@@ -7,10 +7,11 @@ import java.util.List;
 
 @Repository
 public interface KitRepository extends JpaRepository<Kit, Long> {
-    
+
     List<Kit> findByEstadoTrue();
-    
-    Kit findByNombre(String nombre);
-    
+
     List<Kit> findByEstadoFalse();
+
+    // Usado para validar duplicados en crearKit (error 14)
+    boolean existsByNombreIgnoreCase(String nombre);
 }

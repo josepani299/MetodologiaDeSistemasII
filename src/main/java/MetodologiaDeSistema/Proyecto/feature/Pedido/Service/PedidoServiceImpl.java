@@ -13,6 +13,9 @@ import MetodologiaDeSistema.Proyecto.feature.Direccion.repository.DireccionEnvio
 import MetodologiaDeSistema.Proyecto.feature.Pedido.dtos.PedidoItemResponseDto;
 import MetodologiaDeSistema.Proyecto.feature.Pedido.dtos.PedidoResponseDto;
 import MetodologiaDeSistema.Proyecto.feature.Pedido.dtos.ProductoMasVendidoDto;
+import MetodologiaDeSistema.Proyecto.feature.kits.models.Kit;
+import MetodologiaDeSistema.Proyecto.feature.kits.models.KitProducto;
+import MetodologiaDeSistema.Proyecto.feature.kits.repository.KitRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -53,6 +56,9 @@ public class PedidoServiceImpl implements PedidoService {
     @Autowired
     private ClienteRepository clienteRepository;
 
+    @Autowired
+    private KitRepository kitRepository;
+
     @Transactional
     @Override
     public Long confirmarPedido(Long carritoId, ConfirmarPedidoDto dto) {
@@ -61,7 +67,7 @@ public class PedidoServiceImpl implements PedidoService {
                 .orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
 
         if (carrito.getItems().isEmpty()) {
-            throw new RuntimeException("No se puede confirmar un carrito vacio");
+            throw new RuntimeException("No se puede confirmar un carrito vacío");
         }
 
         Pedido pedido = new Pedido();
@@ -69,8 +75,6 @@ public class PedidoServiceImpl implements PedidoService {
         Cliente cliente = clienteRepository.findByCarritoId(carritoId)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
         pedido.setCliente(cliente);
-
-
 
         DireccionEnvio dir = direccionEnvioRepository.findById(dto.getDireccionEnvioId())
                 .orElseThrow(() -> new RuntimeException("Dirección no encontrada"));
@@ -83,23 +87,84 @@ public class PedidoServiceImpl implements PedidoService {
         double total = 0;
 
         for (CarritoItem item : carrito.getItems()) {
-            Producto producto = item.getProducto();
 
-            if (producto.getStockActual() < item.getCantidad()) {
-                throw new RuntimeException("Stock insuficiente para " + producto.getNombre());
+            // ── CASO A: ES UN PRODUCTO INDIVIDUAL ──
+            if (item.getProducto() != null) {
+                Producto producto = item.getProducto();
+
+                if (producto.getStockActual() < item.getCantidad()) {
+                    throw new RuntimeException("Stock insuficiente para " + producto.getNombre());
+                }
+
+                producto.setStockActual(producto.getStockActual() - item.getCantidad());
+                productoRepository.save(producto);
+
+                PedidoItem pedidoItem = new PedidoItem();
+                pedidoItem.setPedido(pedido);
+                pedidoItem.setProducto(producto);
+                pedidoItem.setCantidad(item.getCantidad());
+
+                double precioUnidad = (item.getPrecio() != null) ? item.getPrecio() : producto.getPrecio();
+                double subtotal = precioUnidad * item.getCantidad();
+                pedidoItem.setSubtotal(subtotal);
+
+                total += subtotal;
+                pedidoItems.add(pedidoItem);
             }
 
-            producto.setStockActual(producto.getStockActual() - item.getCantidad());
-            productoRepository.save(producto);
+            // ── CASO B: ES UN KIT DE PRODUCTOS ──
+            else if (item.getKitId() != null) {
+                Kit kit = kitRepository.findById(item.getKitId())
+                        .orElseThrow(() -> new RuntimeException("Kit no encontrado: " + item.getKitNombre()));
 
-            PedidoItem pedidoItem = new PedidoItem();
-            pedidoItem.setPedido(pedido);
-            pedidoItem.setProducto(producto);
-            pedidoItem.setCantidad(item.getCantidad());
-            double subtotal = producto.getPrecio() * item.getCantidad();
-            pedidoItem.setSubtotal(subtotal);
-            total += subtotal;
-            pedidoItems.add(pedidoItem);
+                // 1. Validar primero que haya stock de TODO lo que compone al kit
+                for (KitProducto kitProd : kit.getProductos()) {
+                    Producto prodDelKit = productoRepository.findById(kitProd.getProductoId())
+                            .orElseThrow(() -> new RuntimeException("Producto del kit no encontrado"));
+
+                    int cantidadNecesaria = kitProd.getCantidad() * item.getCantidad();
+                    if (prodDelKit.getStockActual() < cantidadNecesaria) {
+                        throw new RuntimeException("Stock insuficiente en el kit para " + prodDelKit.getNombre());
+                    }
+                }
+
+                // 2. Calcular el precio regular total para aplicar proporcionalmente el descuento del kit
+                double totalPrecioRegularKit = 0.0;
+                Map<Long, Producto> productosMap = new HashMap<>();
+                for (KitProducto kitProd : kit.getProductos()) {
+                    Producto prodDelKit = productoRepository.findById(kitProd.getProductoId()).get();
+                    productosMap.put(kitProd.getProductoId(), prodDelKit);
+                    totalPrecioRegularKit += prodDelKit.getPrecio() * kitProd.getCantidad();
+                }
+
+                double precioKitActual = (item.getPrecio() != null) ? item.getPrecio() : kit.getPrecio();
+                double factorDescuento = (totalPrecioRegularKit > 0) ? (precioKitActual / totalPrecioRegularKit) : 1.0;
+
+                // 3. Descontar stock y guardar cada componente como un PedidoItem individual
+                for (KitProducto kitProd : kit.getProductos()) {
+                    Producto prodDelKit = productosMap.get(kitProd.getProductoId());
+                    int cantidadNecesaria = kitProd.getCantidad() * item.getCantidad();
+
+                    // Restar stock físico del producto
+                    prodDelKit.setStockActual(prodDelKit.getStockActual() - cantidadNecesaria);
+                    productoRepository.save(prodDelKit);
+
+                    // Insertar al pedido desglosado
+                    PedidoItem pedidoItem = new PedidoItem();
+                    pedidoItem.setPedido(pedido);
+                    pedidoItem.setProducto(prodDelKit);
+                    pedidoItem.setCantidad(cantidadNecesaria);
+
+                    // El precio se ajusta según el descuento real que ofrece el Kit
+                    double precioUnitarioProrrateado = prodDelKit.getPrecio() * factorDescuento;
+                    pedidoItem.setSubtotal(precioUnitarioProrrateado * cantidadNecesaria);
+
+                    pedidoItems.add(pedidoItem);
+                }
+
+                // Sumamos el valor real del kit multiplicado por la cantidad de kits comprados
+                total += precioKitActual * item.getCantidad();
+            }
         }
 
         pedido.setItems(pedidoItems);

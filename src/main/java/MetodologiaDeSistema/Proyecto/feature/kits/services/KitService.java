@@ -28,8 +28,14 @@ public class KitService {
 
     @Transactional
     public Kit crearKit(CrearKitRequestDto dto) {
+
+        // ERROR 14 — Validar nombre duplicado (case-insensitive)
+        if (kitRepository.existsByNombreIgnoreCase(dto.getNombre().trim())) {
+            throw new RuntimeException("Ya existe un kit con el nombre: " + dto.getNombre());
+        }
+
         Kit kit = new Kit();
-        kit.setNombre(dto.getNombre());
+        kit.setNombre(dto.getNombre().trim());
         kit.setDescripcion(dto.getDescripcion());
         kit.setPrecio(dto.getPrecio());
         kit.setEstado(true);
@@ -41,15 +47,18 @@ public class KitService {
                     .forEach(c -> agregarProductoAKit(kit.getId(), c.getId(), 1));
         }
 
-        return kit;
+        // ERROR 15 — Retornar el kit recargado desde BD para que productos esté poblado
+        return kitRepository.findById(kit.getId())
+                .orElseThrow(() -> new RuntimeException("Error al recuperar el kit creado"));
     }
+
     @Transactional
     public KitProducto agregarProductoAKit(Long kitId, Long productoId, Integer cantidad) {
         Kit kit = kitRepository.findById(kitId)
-            .orElseThrow(() -> new RuntimeException("Kit no encontrado con ID: " + kitId));
+                .orElseThrow(() -> new RuntimeException("Kit no encontrado con ID: " + kitId));
 
         Producto producto = productoRepository.findById(productoId)
-            .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + productoId));
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + productoId));
 
         Optional<KitProducto> existente = kitProductoRepository.findByKitIdAndProductoId(kitId, productoId);
         if (existente.isPresent()) {
@@ -66,7 +75,7 @@ public class KitService {
 
     public Kit obtenerKitPorId(Long id) {
         return kitRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Kit no encontrado con ID: " + id));
+                .orElseThrow(() -> new RuntimeException("Kit no encontrado con ID: " + id));
     }
 
     public List<Kit> obtenerKitsActivos() {
@@ -89,10 +98,10 @@ public class KitService {
 
         for (KitProducto kp : productos) {
             Producto producto = productoRepository.findById(kp.getProductoId())
-                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-            
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
             Integer stockDisponible = producto.getStockActual() / kp.getCantidad();
-            
+
             if (stockDisponible < stockMinimo) {
                 stockMinimo = stockDisponible;
             }
@@ -104,7 +113,7 @@ public class KitService {
     @Transactional
     public Kit actualizarKit(Long id, String nombre, String descripcion, Double precio) {
         Kit kit = obtenerKitPorId(id);
-        
+
         if (nombre != null) kit.setNombre(nombre);
         if (descripcion != null) kit.setDescripcion(descripcion);
         if (precio != null) kit.setPrecio(precio);
@@ -121,13 +130,21 @@ public class KitService {
     @Transactional
     public void eliminarProductoDelKit(Long kitId, Long kitProductoId) {
         KitProducto kp = kitProductoRepository.findById(kitProductoId)
-            .orElseThrow(() -> new RuntimeException("KitProducto no encontrado"));
-        
+                .orElseThrow(() -> new RuntimeException("KitProducto no encontrado"));
+
         if (!kp.getKit().getId().equals(kitId)) {
             throw new RuntimeException("El producto no pertenece a este kit");
         }
-        
+
         kitProductoRepository.deleteById(kitProductoId);
+    }
+
+    // ERROR 3 — Eliminar un kit completo
+    @Transactional
+    public void eliminarKit(Long id) {
+        Kit kit = obtenerKitPorId(id);
+        // El CascadeType.ALL en Kit.productos borra automáticamente los KitProducto asociados
+        kitRepository.delete(kit);
     }
 
     public List<KitProducto> obtenerProductosDelKit(Long kitId) {

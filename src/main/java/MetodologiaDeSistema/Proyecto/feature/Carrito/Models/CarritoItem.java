@@ -23,6 +23,12 @@ public class CarritoItem {
     @ManyToOne
     private Carrito carrito;
 
+    // Producto: null cuando el item es un kit
     @ManyToOne
     private Producto producto;
+
+    // Kit: null cuando el item es un producto individual
+    // JPA agrega kit_id y kit_nombre a la tabla automáticamente (ddl-auto=update)
+    private Long kitId;
+    private String kitNombre;
 }
