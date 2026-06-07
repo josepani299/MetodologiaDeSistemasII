@@ -129,5 +129,13 @@ public class ProductoService {
         );
     }
 
+    public ProductoResponseDto actualizarStock(Long id, Integer nuevoStock) {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new ProductoNoEncontradoException(id));
+        if (nuevoStock < 0) throw new IllegalArgumentException("El stock no puede ser negativo.");
+        producto.setStockActual(nuevoStock);
+        return mapToDto(productoRepository.save(producto));
+    }
+
 
 }
